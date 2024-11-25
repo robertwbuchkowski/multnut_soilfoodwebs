@@ -128,7 +128,22 @@ mineralization[[1]] = prop$Carbon$a*(1-prop$Carbon$p)*consumption + prop$Carbon$
 
 # Calculate the mineralization rates of the various elements using the comparison to carbon:
 
-for(i in 2:length(element_list)) {}
+for(i in 2:length(element_list)) {
+  current_element_properties = prop[[which(names(prop) == element_list[i])]]
+
+  Qhat = prop$Carbon$Q/current_element_properties$Q
+
+  mineralization[[i]] = (prop$Carbon$E*prop$Carbon$B - # Carbon mineralization rate based on a fixed proportion of biomass
+                           rowSums((matrix(Qhat, nrow = Nnodes, ncol = Nnodes)* # Predator C:X ratio
+                                      matrix(current_element_properties$a*current_element_properties$p, nrow = Nnodes, ncol = Nnodes)/ # Predator X assimilation and production rates
+                                      matrix(Qhat, nrow = Nnodes, ncol = Nnodes, byrow = T) - # Prey C:X ratio
+                                      matrix(prop$Carbon$a*prop$Carbon$p, nrow = Nnodes, ncol = Nnodes))* # Predator C assimilation and production rates
+                                     fmat$Carbon))* # consumption rates
+    Qhat* # multiply by C:X ratio to get back to units of X
+    as.numeric(rowSums(imat)>0) # Make X mineralization zero for all nodes without prey items.
+}
+
+
 
 # WORKING ON THE MATH FOR THIS PART!
 
