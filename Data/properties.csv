@@ -26,7 +26,7 @@ Prey2,Nitrogen,canIMM,0
 Pred,Phosphorus,a,0.8
 Pred,Phosphorus,E,0.1
 Pred,Phosphorus,Q,0.015
-Pred,Phosphorus,canIMM,0.025
+Pred,Phosphorus,canIMM,0
 Prey1,Phosphorus,a,0.8
 Prey1,Phosphorus,E,0.05
 Prey1,Phosphorus,Q,0.01
