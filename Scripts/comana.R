@@ -95,7 +95,7 @@ comana <- function(usin,
 
     Qhat = prop$Carbon$Q/current_element_properties$Q
 
-    mineralization[[i]] = (prop$Carbon$E*prop$Carbon$B - # Carbon mineralization rate based on a fixed proportion of biomass
+    mineralization[[i]] = (prop$Carbon$E*prop$Carbon$B + # Carbon mineralization rate based on a fixed proportion of biomass
                              rowSums((AIJ[[i]])* # Net element gain from feeding
                                        fmat$Carbon))* # consumption rates
       Qhat* # multiply by C:X ratio to get back to units of X

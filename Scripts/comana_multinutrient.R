@@ -4,9 +4,9 @@
 
 # Create a data frame of feeding relationships:
 feeding = data.frame(
-Predator = c("Pred", "Pred"),
-Prey = c("Prey1", "Prey2"),
-Preference = c(1,1.2))
+Predator = c("Pred", "Pred", "Prey1", "Prey1"),
+Prey = c("Prey1", "Prey2", "Prey2", "Detritus"),
+Preference = c(1,1.2,1,1))
 
 # Create a data frame of properties for each species:
 if(F){
@@ -34,7 +34,6 @@ rm(properties, feeding)
 source("Scripts/comana.R")
 comana(usin)
 
-
 # Correct the diet to fix stoichiometry:
 
 # Separate the imat and prop:
@@ -58,12 +57,12 @@ species = unname(which(apply(do.call("rbind", mineralization)* # This is the min
 
 species
 
-
 for(sp in species){
 
   while(TRUE){
     food = imat[sp,] > 0 # Get the list of food items
     numfood = sum(food)
+    if(numfood == 1) break()
     biomass = prop$Carbon$B[food] # Get the biomass of food items
     FT = unname(consumption[sp])
     limits = dietlimits[sp,food]
@@ -102,16 +101,28 @@ for(sp in species){
       ),
       silent = T)
 
-    #NEED TO CONFIRM THE ABOVE FUNCTION WITH AN EXAMPLE WHERE THERE IS A SOLUTION AND THEN IMPROVE THE LINEAR PROGRAM!
-
-
     # If there is no solution, then run a linear program to find the closest diet within the limits
     if(is.null(sol1)){
+
+      # Build the objective function:
+      #sum[i = Element] (E_i*C_i)
+      # We can get rid of baseline mineralization terms E[k]*C[i] because they are all in units of carbon and increase the objective function, but don't change with F.
+
       sol1 <- lpSolve::lp(direction = "max",
-                          objective.in = c(ai*FT),
-                          const.mat = rbind(rep(1, length(ai)),-diag(nrow = length(ai)),diag(nrow = length(ai))),
-                          const.dir = c("=", rep(">=", 2*length(ai))),
-                          const.rhs = c(1, -limits, rep(0, length(ai)))
+                          objective.in =
+                            c(colSums( # Add across the elements
+                              do.call("rbind",lapply(AIJ, function(x) x[sp,food])))* # Draw the AIJ for each prey item.
+                                FT), # Multiply by total consumption rate.
+                          const.mat =
+                            rbind(rep(1,
+                                      numfood),
+                                  -diag(nrow = numfood),
+                                  diag(nrow = numfood)),
+                          const.dir = c("=",
+                                        rep(">=", 2*numfood)),
+                          const.rhs = c(1,
+                                        -limits,
+                                        rep(0, numfood))
       )
     }
 
@@ -125,7 +136,8 @@ for(sp in species){
     if(any(solcheck < 1e-10)){
       warning(paste0("Diet correction removes an item from the diet of species ",sp,". May get strange model behavior. Check outputs for errors in diet proportions! This code just deletes the food item and distirbutes evenly across the other food items."))
 
-      usin$imat[sp,usin$imat[sp,] > 0][which(solcheck < 1e-10)] = 0
+      usin$imat[sp,food][which(solcheck < 1e-10)] = 0
+      break()
 
     }else{
       break()
@@ -139,6 +151,9 @@ for(sp in species){
 
   usin$imat[sp,food] = FLIST2
 
-  if(sum((comana(usin,shuffleTL = F)$fmat[sp,food]/FT - FLIST)^2) > 1e-10) stop("Check quadratic optimization. There is an issue.")
+  if(sum((comana(usin,shuffleTL = F)$fmat$Carbon[sp,food]/FT - FLIST)^2) > 1e-10) stop("Check quadratic optimization. There is an issue.")
 
 }
+
+
+comana(usin)

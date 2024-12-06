@@ -11,6 +11,10 @@ Prey2,Carbon,a,0.45
 Prey2,Carbon,E,0.05
 Prey2,Carbon,Q,0.5
 Prey2,Carbon,canIMM,0
+Detritus,Carbon,a,1
+Detritus,Carbon,E,0
+Detritus,Carbon,Q,0.5
+Detritus,Carbon,canIMM,0
 Pred,Nitrogen,a,0.7
 Pred,Nitrogen,E,0.1
 Pred,Nitrogen,Q,0.111
@@ -23,6 +27,10 @@ Prey2,Nitrogen,a,0.7
 Prey2,Nitrogen,E,0.025
 Prey2,Nitrogen,Q,0.1
 Prey2,Nitrogen,canIMM,0
+Detritus,Nitrogen,a,1
+Detritus,Nitrogen,E,0
+Detritus,Nitrogen,Q,0.025
+Detritus,Nitrogen,canIMM,0
 Pred,Phosphorus,a,0.8
 Pred,Phosphorus,E,0.1
 Pred,Phosphorus,Q,0.015
@@ -35,6 +43,10 @@ Prey2,Phosphorus,a,0.8
 Prey2,Phosphorus,E,0.025
 Prey2,Phosphorus,Q,0.008
 Prey2,Phosphorus,canIMM,0
+Detritus,Phosphorus,a,1
+Detritus,Phosphorus,E,0
+Detritus,Phosphorus,Q,0.008
+Detritus,Phosphorus,canIMM,0
 Pred,Calcium,a,0.8
 Pred,Calcium,E,0.1
 Pred,Calcium,Q,0.01
@@ -47,6 +59,10 @@ Prey2,Calcium,a,0.8
 Prey2,Calcium,E,0.025
 Prey2,Calcium,Q,0.009
 Prey2,Calcium,canIMM,0
+Detritus,Calcium,a,1
+Detritus,Calcium,E,0
+Detritus,Calcium,Q,0.009
+Detritus,Calcium,canIMM,0
 Pred,Carbon,d,1
 Pred,Carbon,B,0.1
 Pred,Carbon,DetritusRecycling,0
@@ -62,3 +78,8 @@ Prey2,Carbon,B,5
 Prey2,Carbon,DetritusRecycling,0
 Prey2,Carbon,isDetritus,0
 Prey2,Carbon,isPlant,0
+Detritus,Carbon,d,0
+Detritus,Carbon,B,100
+Detritus,Carbon,DetritusRecycling,1
+Detritus,Carbon,isDetritus,1
+Detritus,Carbon,isPlant,0
