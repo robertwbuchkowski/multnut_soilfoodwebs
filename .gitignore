@@ -2,3 +2,5 @@
 .Rhistory
 .RData
 .Ruserdata
+Scripts/description_of_model_files/*
+*.html

@@ -31,6 +31,15 @@ correct_diet <- function(usin,dietlimits = c(NA)){
 
   for(sp in species){
 
+
+    # Separate the imat and prop:
+    imat = usin$imat # row values of imat sets predator feeding preferences!
+    prop = usin$prop # properties of each trophic species
+    mineralization = comana(usin)$mineralization
+    consumption = comana(usin)$consumption
+    Nnodes = dim(imat)[1] # Number of nodes in the food web
+    AIJ = comana(usin)$AIJ
+
     while(TRUE){
       food = imat[sp,] > 0 # Get the list of food items
       numfood = sum(food)
@@ -61,7 +70,7 @@ correct_diet <- function(usin,dietlimits = c(NA)){
                rep(0,numfood))
 
       for(i in 2:length(prop)){
-        BVEC = c(BVEC, prop[[i]]$E[sp]*prop$Carbon$B[sp]) # CHANGED TO POSITIVE PROP, NOW NEED TO CONFIRM IT MAKES SENSE!
+        BVEC = c(BVEC, -prop[[i]]$E[sp]*prop$Carbon$B[sp])
       }
 
       try(

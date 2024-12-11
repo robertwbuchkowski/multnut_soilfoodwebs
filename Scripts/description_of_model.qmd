@@ -1,0 +1,85 @@
+---
+title: "Multiple Nutrient Soil Food Web Analysis"
+author: "Robert W Buchkowski"
+format: html
+editor: visual
+---
+
+## Model formulation
+
+The model is based on a Lotka-Volterra population model between nodes wherein the amount of each element, *k*, is represented for each node in the food web, *X*. The biomass in each node is indexed in units of carbon, so we can use two equations to represent all of the elements in the food web: one for carbon and another for every other element.
+
+$$
+\frac{dX_{C,i}}{dt} = \sum_{j} (a_{C,i}p_{C,i}F_{i,j}) -d_iC_i - E_{C,i}C_i -\sum_j M_{i,j}
+$$ {#eq-1}
+
+$$
+\frac{dX_{k,i}}{dt} = \sum_{j} (a_{k,i}p_{k,i}F_{i,j}\frac{Q_{k,j}}{Q_{C,j}}) - d_iC_i\frac{Q_{k,i}}{Q_{C,i}} - E_{k,i}C_i\frac{Q_{k,i}}{Q_{C,i}} - \frac{Q_{k,i}}{Q_{C,i}}\sum_j M_{i,j}
+$$ {#eq-2}
+
+In the above equations, $X_{k,i}$ is the biomass in element $k$. The model contains two ways that organisms mineralize elements that need to be chosen between. They can loose an element at a constant per capita rate $E_{k,i}$ or they can loose an element at a constant proportion of the food assimilated $p_{k,i}$. Both are used in the literature, the former in metabolic scaling models and the latter in existing soil food web models. We include both in our model so that the user can select which method is most appropriate for their application.
+
+We assume fixed stoichiometry for each element, which means that the rates of carbon content to all the other elements remain the same over time. The model takes the percentage of each element present in the biomass of the animal $Q_{k,i}$. To simplify our notation, we will call the ratio of carbon to each element $\frac{Q_{C,i}}{Q_{k,i}} = \hat{Q}_{k,i}$. Because we typically take larger time steps, this means that we can assume the following equality:
+
+$$
+\frac{X_{C,i}}{dt} = \hat{Q}_{k,i}\frac{X_{k,i}}{dt}
+$$ {#eq-3}
+
+The consequence of this equality, is that we can calculate one parameter for each chemical element other than carbon by using the above equation. In soil food web models, this is usually used to calculate the mineralization parameters $E_{k,i}$, which are usually reported as total mineralization or $E_{k,i}C_i$ in units of carbon or $\frac{E_{k,i}C_i}{\hat{Q}_{k,i}}$ in the units of element $k$.
+
+## Calculating mineralization rates
+
+We can calculate mineralization rates using equations 1 to 3.
+
+$$
+\sum_{j} (a_{C,i}p_{C,i}F_{i,j}) -d_iC_i - E_{C,i}C_i -\sum_j M_{i,j} = \hat{Q}_{k,i}(\sum_{j} (\frac{a_{k,i}p_{k,i}F_{i,j}}{\hat{Q}_{k,i}}) - \frac{d_iC_i}{\hat{Q}_{k,i}} - \frac{E_{k,i}C_i}{\hat{Q}_{k,i}} - \frac{1}{\hat{Q}_{k,i}}\sum_j M_{i,j})
+$$ $$
+\sum_{j} (a_{C,i}p_{C,i}F_{i,j}) -d_iC_i - E_{C,i}C_i -\sum_j M_{i,j} = \hat{Q}_{k,i}\sum_{j} (\frac{a_{k,i}p_{k,i}F_{i,j}}{\hat{Q}_{k,j}}) - d_iC_i - E_{k,i}C_i - \sum_j M_{i,j}
+$$
+
+We can cancel terms for death rate and predation, since these represent losses of all elements at the proportion that they exist in the biomass.
+
+$$
+E_{k,i}C_i = E_{C,i}C_i + \hat{Q}_{k,i}\sum_{j} (\frac{a_{k,i}p_{k,i}F_{i,j}}{\hat{Q}_{k,j}}) - \sum_{j} (a_{C,i}p_{C,i}F_{i,j})
+$$
+
+Then we can combine the terms that sum across all other species $j$ and factor out the feeding rate.
+
+$$
+E_{k,i}C_i = E_{C,i}C_i + \sum_{j} (\frac{\hat{Q}_{k,i}}{\hat{Q}_{k,j}}a_{k,i}p_{k,i}-a_{C,i}p_{C,i})F_{i,j}
+$$ This equation provides an easy interpretation of how mineralization is determined. The amount of element $k$ mineralized is $\frac{E_{k,i}C_i}{\hat{Q}_{k,i}}$ in its own units, but because the nutrient stoichiometry is fixed, we can express it in units of carbon to make it easier to compare across multiple chemical elements. This value $E_{k,i}C_i$ is equal to the amount of carbon mineralized $E_{C,i}C_i$ plus the additional gain or loss of the element $k$ from the food, considering assimilation and production efficiency. So, when the second term is positive, there is relatively more of element $k$ mineralized than carbon. When it is negative, there is relatively less.
+
+The term in the parenthetical has an important interpretation. When it is negative for food source $j$, then eating that food leads to a nutrient deficit. When it is positive, eating that food leads to a nutrient surplus. For the purposes of further modelling, we define this term using calographic letter $\mathfrak{a}$.
+
+Overall, we can solve for mineralization rates using the following, simplified equation:
+
+$$
+E_{k,i}C_i = E_{C,i}C_i + \sum_{j} \mathfrak{a}_{k,i,j}F_{i,j}
+$$
+
+## Calculating the mineralization rate
+
+To calculate the mineralization rate of all elements other than carbon, we need to adhere to the constraint that mineralizaiton is greater than zero or some minimum value. Mathematically, this means the following:
+
+$$
+E_{k,i}C_i \geq 0
+$$ $$
+E_{C,i}C_i \geq -\sum_{j} \mathfrak{a}_{k,i,j}F_{i,j}
+$$
+
+To ensure that this constraint is met, we can modify the feeding rates on each food source until the RHS of the equation is less than the amount of carbon mineralized.
+
+We want to modify the feeding rates so that they are as close as possible to the actual food availability. To do this, we define $b_{i,j}$ as the proportion of the total available food in the biomass of source $j$ and $f_{i,j}$ as the proportion of the overall diet $F_{i,T}$ that is composed of food $j$. This allows us to modify the above equation to be:
+
+$$
+E_{C,i}C_i \geq -\sum_{j} \mathfrak{a}_{k,i,j}f_{i,j}F_{i,T}
+$$ With this notation, we can define the following quadratic program:
+
+$$
+\begin{align}
+\min_{f_{i,j}} & \quad \sum_{j}^{N} {(b_{i,j} - f_{i,j})^2} \\
+\text{subject to} & \quad \sum_{j} f_{i,j} = 1 \\
+& \quad -f_{i,j} \geq -L_{i,j} \forall i \in 1:N \\
+& \quad \sum_{j} \mathfrak{a}_{k,i,j}f_{i,j}F_{i,T} \geq -E_{C,i}C_i
+\end{align}
+$$ In the above program, we minimize the differences between the abundance of the food in the environment and the diet, while ensuring food consumption rate remains the same, that any user input dietary limits $L_{i,j}$ are met, and that mineralization rate remains positive. The function **quadprog::solve.QP** only accepts equalities or greater than or equal to expressions, so the program is modified to fit that notation.

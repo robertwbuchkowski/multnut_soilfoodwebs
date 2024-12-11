@@ -51,7 +51,6 @@ feeding = data.frame(
 # Read back in the example data:
 properties = read.csv("Data/properties2.csv")
 
-
 # Build the foodweb:
 source("Scripts/build_foodweb.R")
 usin <- build_foodweb(feeding = feeding,
@@ -59,6 +58,8 @@ usin <- build_foodweb(feeding = feeding,
 
 # Clean the environment:
 rm(properties, feeding)
+
+# usin$prop$Nitrogen$a = 1
 
 source("Scripts/comana.R")
 comana(usin)
