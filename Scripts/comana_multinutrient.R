@@ -40,41 +40,12 @@ usin2 = correct_diet(usin)
 
 comana(usin2)
 
-# Test the function with a simple two element community:
+# Correct respiration:
+source("Scripts/correct_respiration.R")
 
-# Create a data frame of feeding relationships:
-feeding = data.frame(
-  Predator = c("Pred", "Pred", "Prey1", "Prey2", "Prey2","Prey1", "Microbe1"),
-  Prey = c("Prey1", "Prey2", "Prey2", "Microbe1","Detritus","Detritus","Detritus"),
-  Preference = c(1,1.2,1,1,1,1,1))
+usin3 = correct_respiration(usin)
 
-# Read back in the example data:
-properties = read.csv("Data/properties2.csv")
-
-# Build the foodweb:
-source("Scripts/build_foodweb.R")
-usin <- build_foodweb(feeding = feeding,
-                      properties = properties)
-
-# Clean the environment:
-rm(properties, feeding)
-
-# usin$prop$Nitrogen$a = 1
-
-source("Scripts/comana.R")
-comana(usin)
-
-# Correct the diet to fix stoichiometry:
-source("Scripts/correct_diet.R")
-
-usin2 = correct_diet(usin)
-
-comana(usin2)
-
-# CORRECT DIET IS NOT WORKING, BECAUSE THERE SHOULD BE A ZERO MINERALIZATION POSSIBLE FOR THE LOWEST ELEMENT. ERROR IN THE PROGRAM!
-
-
-
+comana(usin3)
 
 
 # Test the function with a simple two element community:
@@ -100,9 +71,6 @@ rm(properties, feeding)
 
 source("Scripts/comana.R")
 comana(usin)
-
-# usin$imat[2,3] = 209.7189 # The correct rate
-# comana(usin)$mineralization$Nitrogen
 
 # Correct the diet to fix stoichiometry:
 source("Scripts/correct_diet.R")
@@ -114,4 +82,6 @@ comana(usin2)
 # Correct respiration:
 source("Scripts/correct_respiration.R")
 
-correct_respiration(usin)
+usin3 = correct_respiration(usin)
+
+comana(usin3)

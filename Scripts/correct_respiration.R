@@ -24,11 +24,11 @@ correct_respiration = function(usin, output_type = TRUE){
     Nnodes = dim(imat)[1] # Number of nodes in the food web
     AIJ = comana(usin)$AIJ
 
-    Ec_reduced_to = lapply(AIJ, function(x) {-(1/prop$Carbon$B)*sum(x[sp,]*Fij[sp,])})
+    Ec_increased_to = lapply(AIJ, function(x) {-(1/prop$Carbon$B[sp])*sum(x[sp,]*Fij[sp,])})
 
-    nutlim[sp] = names(AIJ)[which.min(Ec_reduced_to)]
+    nutlim[sp] = names(AIJ)[which.max(Ec_increased_to)]
 
-    usin$prop$Carbon$E = min(Ec_reduced_to)
+    usin$prop$Carbon$E[sp] = max(do.call("rbind",Ec_increased_to))
 
   }
 
@@ -36,7 +36,7 @@ correct_respiration = function(usin, output_type = TRUE){
 
   if(output_type){
     print(data.frame(ID = colnames(usin$imat),
-                     `Limiting nutrient` = nutlim))
+                     `Limiting_nutrient` = nutlim))
     return(usin)
   }else{
     return(list(usin,output_type))
