@@ -111,4 +111,7 @@ usin2 = correct_diet(usin)
 
 comana(usin2)
 
-# CORRECT DIET IS NOT WORKING, BECAUSE THERE SHOULD BE A ZERO MINERALIZATION POSSIBLE FOR THE LOWEST ELEMENT. ERROR IN THE PROGRAM!
+# Correct respiration:
+source("Scripts/correct_respiration.R")
+
+correct_respiration(usin)
