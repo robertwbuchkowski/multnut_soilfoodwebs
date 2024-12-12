@@ -33,21 +33,24 @@ We can calculate mineralization rates using equations 1 to 3.
 
 $$
 \sum_{j} (a_{C,i}p_{C,i}F_{i,j}) -d_iC_i - E_{C,i}C_i -\sum_j M_{i,j} = \hat{Q}_{k,i}(\sum_{j} (\frac{a_{k,i}p_{k,i}F_{i,j}}{\hat{Q}_{k,i}}) - \frac{d_iC_i}{\hat{Q}_{k,i}} - \frac{E_{k,i}C_i}{\hat{Q}_{k,i}} - \frac{1}{\hat{Q}_{k,i}}\sum_j M_{i,j})
-$$ $$
+$$ {#eq-4a}
+$$ 
 \sum_{j} (a_{C,i}p_{C,i}F_{i,j}) -d_iC_i - E_{C,i}C_i -\sum_j M_{i,j} = \hat{Q}_{k,i}\sum_{j} (\frac{a_{k,i}p_{k,i}F_{i,j}}{\hat{Q}_{k,j}}) - d_iC_i - E_{k,i}C_i - \sum_j M_{i,j}
-$$
+$$ {#eq-4b}
 
 We can cancel terms for death rate and predation, since these represent losses of all elements at the proportion that they exist in the biomass.
 
 $$
 E_{k,i}C_i = E_{C,i}C_i + \hat{Q}_{k,i}\sum_{j} (\frac{a_{k,i}p_{k,i}F_{i,j}}{\hat{Q}_{k,j}}) - \sum_{j} (a_{C,i}p_{C,i}F_{i,j})
-$$
+$$ {#eq-5}
 
 Then we can combine the terms that sum across all other species $j$ and factor out the feeding rate.
 
 $$
 E_{k,i}C_i = E_{C,i}C_i + \sum_{j} (\frac{\hat{Q}_{k,i}}{\hat{Q}_{k,j}}a_{k,i}p_{k,i}-a_{C,i}p_{C,i})F_{i,j}
-$$ This equation provides an easy interpretation of how mineralization is determined. The amount of element $k$ mineralized is $\frac{E_{k,i}C_i}{\hat{Q}_{k,i}}$ in its own units, but because the nutrient stoichiometry is fixed, we can express it in units of carbon to make it easier to compare across multiple chemical elements. This value $E_{k,i}C_i$ is equal to the amount of carbon mineralized $E_{C,i}C_i$ plus the additional gain or loss of the element $k$ from the food, considering assimilation and production efficiency. So, when the second term is positive, there is relatively more of element $k$ mineralized than carbon. When it is negative, there is relatively less.
+$$ {#eq-6}
+
+This equation provides an easy interpretation of how mineralization is determined. The amount of element $k$ mineralized is $\frac{E_{k,i}C_i}{\hat{Q}_{k,i}}$ in its own units, but because the nutrient stoichiometry is fixed, we can express it in units of carbon to make it easier to compare across multiple chemical elements. This value $E_{k,i}C_i$ is equal to the amount of carbon mineralized $E_{C,i}C_i$ plus the additional gain or loss of the element $k$ from the food, considering assimilation and production efficiency. So, when the second term is positive, there is relatively more of element $k$ mineralized than carbon. When it is negative, there is relatively less.
 
 The term in the parenthetical has an important interpretation. When it is negative for food source $j$, then eating that food leads to a nutrient deficit. When it is positive, eating that food leads to a nutrient surplus. For the purposes of further modelling, we define this term using calographic letter $\mathfrak{a}$.
 
@@ -55,7 +58,7 @@ Overall, we can solve for mineralization rates using the following, simplified e
 
 $$
 E_{k,i}C_i = E_{C,i}C_i + \sum_{j} \mathfrak{a}_{k,i,j}F_{i,j}
-$$
+$$ {#eq-7}
 
 ## Calculating the mineralization rate
 
@@ -63,9 +66,11 @@ To calculate the mineralization rate of all elements other than carbon, we need 
 
 $$
 E_{k,i}C_i \geq 0
-$$ $$
+$$ {#eq-8a}
+
+$$ 
 E_{C,i}C_i \geq -\sum_{j} \mathfrak{a}_{k,i,j}F_{i,j}
-$$
+$$ {#eq-8b}
 
 To ensure that this constraint is met, we can modify the feeding rates on each food source until the RHS of the equation is less than the amount of carbon mineralized.
 
@@ -73,7 +78,9 @@ We want to modify the feeding rates so that they are as close as possible to the
 
 $$
 E_{C,i}C_i \geq -\sum_{j} \mathfrak{a}_{k,i,j}f_{i,j}F_{i,T}
-$$ With this notation, we can define the following quadratic program:
+$$ {#eq-9} 
+
+With this notation, we can define the following quadratic program:
 
 $$
 \begin{align}
@@ -82,4 +89,46 @@ $$
 & \quad -f_{i,j} \geq -L_{i,j} \forall i \in 1:N \\
 & \quad \sum_{j} \mathfrak{a}_{k,i,j}f_{i,j}F_{i,T} \geq -E_{C,i}C_i
 \end{align}
-$$ In the above program, we minimize the differences between the abundance of the food in the environment and the diet, while ensuring food consumption rate remains the same, that any user input dietary limits $L_{i,j}$ are met, and that mineralization rate remains positive. The function **quadprog::solve.QP** only accepts equalities or greater than or equal to expressions, so the program is modified to fit that notation.
+$$ {#eq-10}
+
+In the above program, we minimize the differences between the abundance of the food in the environment and the diet, while ensuring food consumption rate remains the same, that any user input dietary limits $L_{i,j}$ are met, and that mineralization rate remains positive. The function **quadprog::solve.QP** only accepts equalities or greater than or equal to expressions, so the program is modified to fit that notation.
+
+The quadratic program does not always have a solution because it is possible that shifting diets can improve nutrient intake, but not enough to meet demand. In these cases, the program will fail but the organism should shift it's diet somehow to minimize nutrient deficiency.
+
+Here, we benefit from representing all nutrient deficiencies in units of carbon. This allows us to maximize the nutrient content of the diet across all nutrients. We justify this, because the organism response to any dietary limitation not addressed by diet will be to increase their metabolic losses. This means that the best strategy is to get all elements as close to matching as possible rather than get lots of one element at the expense of another. **A core assumption here is that all elements included in this model are essential.**
+
+Given this assumption, we can write the following linear program:
+
+$$
+\begin{align}
+\max_{f_{i,j}} & \quad \sum_{k} \sum_{j}^{N} \mathfrak{a}_{k,i,j}f_{i,j}F_{i,T} \\
+\text{subject to} & \quad \sum_{j} f_{i,j} = 1 \\
+& \quad -f_{i,j} \geq -L_{i,j} \forall i \in 1:N
+\end{align}
+$$ {#eq-11}
+The objective function in the above program sums the mineralization across all elements after calculating the net mineralization of each element in units of carbon. By dealing in carbon, all elements are compared in the same currency and therefore can be summed.
+
+## Deficiencies unaddressed by diet
+
+In many cases, nutrient deficiency may not be addressed by diet alone because there is only 1 dietary option or all options have insufficient nutrient content. In these cases, the organism is limited by the nutrient in shortest supply by Liebig's Law of the Minimum and must reduce their growth to match this supply rate.
+
+We can calculate this reduction in growth by calculating the amount of extra carbon that needs to be mineralized. We can decide to either (1) increase per capita respiration or (2) decrease production efficiency. **So far, we will only use the former, but can easily add functionality for the latter. At equilibrium, the difference is trivial.**
+
+Using the equation for the element in shortest supply, which is identified as the one where $E_{k,i}$ is smallest, we can calculate a new $E_{C,i}$ using equation (8):
+
+$$
+\begin{align}
+E_{k,i}C_i \geq 0 & \quad \forall k
+\end{align}
+$$ {#eq-12a}
+
+If we already know that the mineralization rate is less than zero, we can calculate the case where mineralization rate is zero for the element in shortest supply.
+
+$$
+E_{C,i}C_i + \sum_{j} \mathfrak{a}_{k,i,j}F_{i,j} = 0
+$$ {#eq-12b}
+
+$$
+E_{C,i} =  -\frac{1}{C_i}\sum_{j} \mathfrak{a}_{k,i,j}F_{i,j}
+$$ {#eq-12c}
+

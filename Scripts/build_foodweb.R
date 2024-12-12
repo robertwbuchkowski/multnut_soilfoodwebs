@@ -75,19 +75,18 @@ build_foodweb <- function(feeding,
     rm(tdf)
   }
 
-  # Add in zero respiration if E is not listed in the data frame:
-  if(!any(properties$Parameter == "E")){
+  # Add in a minimum of zero respiration if E is not listed in the data frame:
+  if(!any(properties$Parameter == "Emin")){
     tdf = unique(properties[,c("ID", "Element")])
 
-    tdf[,c("Parameter")] = c("E")
+    tdf = subset(tdf, Element != "Carbon")
+
+    tdf[,c("Parameter")] = c("Emin")
     tdf[,c("Value")] = c(0)
 
     properties = rbind(properties, tdf)
     rm(tdf)
   }
-
-  # Test conflict between E and p:
-  if(any(subset(properties, properties$Parameter == "E")$Value > 0) & any(subset(properties, properties$Parameter == "p")$Value < 1)) print("Error")
 
   Nnodes = dim(feedingmatrix)[1] # Number of nodes in the food web
 
