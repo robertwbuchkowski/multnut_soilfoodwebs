@@ -13,20 +13,11 @@ correct_diet <- function(usin,dietlimits = c(NA)){
     if(!all(dim(dietlimits) == dim(usin$imat))) stop("dietlimits must have the same dimensions as imat")
     if(any(dietlimits > 1) | any(dietlimits < 0)) stop("dietlimits must be a proportion of the diet between 0 and 1")
   }
-
-  # Separate the imat and prop:
-  imat = usin$imat # row values of imat sets predator feeding preferences!
-  prop = usin$prop # properties of each trophic species
-  mineralization = comana(usin)$mineralization
-  consumption = comana(usin)$consumption
-  Nnodes = dim(imat)[1] # Number of nodes in the food web
-  AIJ = comana(usin)$AIJ
-
   #Identify the species that need correction by having negative mineralization and canIMM == 0 and more than 1 prey item
-  species = unname(which(apply(do.call("rbind", mineralization)* # This is the mineralizaiton
-                                 do.call("rbind",lapply(prop, function(x) (1-x$canIMM))), # This means that if canIMM == 1 the negative number is multiplied by zero and removed so that the test of needing correction fails. If canIMM ==0, then the numbers are left as is.
+  species = unname(which(apply(do.call("rbind", comana(usin)$mineralization)* # This is the mineralizaiton
+                                 do.call("rbind",lapply(usin$prop, function(x) (1-x$canIMM))), # This means that if canIMM == 1 the negative number is multiplied by zero and removed so that the test of needing correction fails. If canIMM ==0, then the numbers are left as is.
                                2, function(x) any(x < 0)) &
-                           apply(imat > 0, 1, sum) > 1 # Species must have more than one food item
+                           apply(usin$imat > 0, 1, sum) > 1 # Species must have more than one food item
   ))
 
   for(sp in species){
@@ -70,7 +61,7 @@ correct_diet <- function(usin,dietlimits = c(NA)){
                rep(0,numfood))
 
       for(i in 2:length(prop)){
-        BVEC = c(BVEC, -prop[[i]]$E[sp]*prop$Carbon$B[sp])
+        BVEC = c(BVEC, -prop$Carbon$E[sp]*prop$Carbon$B[sp])
       }
 
       try(
