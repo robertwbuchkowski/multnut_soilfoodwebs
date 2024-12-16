@@ -85,3 +85,8 @@ source("Scripts/correct_respiration.R")
 usin3 = correct_respiration(usin)
 
 comana(usin3)
+
+# The consumption rate changes, so the calculation in the correct_respiration function is not accurate. This is because consumption cannot be factored out when respiration rate maintains a second term in the equation...in other words, Fij is a function of E_[C,i] so both need to be changed together.
+
+comana(usin)$consumption
+comana(usin3)$consumption
