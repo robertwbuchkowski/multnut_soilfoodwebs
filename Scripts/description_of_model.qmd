@@ -112,7 +112,7 @@ The objective function in the above program sums the mineralization across all e
 
 In many cases, nutrient deficiency may not be addressed by diet alone because there is only 1 dietary option or all options have insufficient nutrient content. In these cases, the organism is limited by the nutrient in shortest supply by Liebig's Law of the Minimum and must reduce their growth to match this supply rate.
 
-We can calculate this reduction in growth by calculating the amount of extra carbon that needs to be mineralized. We can decide to either (1) increase per capita respiration or (2) decrease production efficiency. **So far, we will only use the former, but can easily add functionality for the latter. At equilibrium, the difference is trivial.**
+We can calculate this reduction in growth by calculating the amount of extra carbon that needs to be mineralized. We can decide to either (1) increase per capita respiration or (2) decrease production efficiency. **So far, we will only use the former, but can easily add functionality for the latter. At equilibrium, the difference is trivial because neither biomass nor consumption rate change.**
 
 Using the equation for the element in shortest supply, which is identified as the one where $E_{k,i}$ is smallest, we can calculate a new $E_{C,i}$ using equation (8):
 
@@ -128,7 +128,4 @@ $$
 E_{C,i}C_i + \sum_{j} \mathfrak{a}_{k,i,j}F_{i,j} = 0
 $$ {#eq-12b}
 
-$$
-E_{C,i} =  -\frac{1}{C_i}\sum_{j} \mathfrak{a}_{k,i,j}F_{i,j}
-$$ {#eq-12c}
-
+However, the consumption rate $F_{i,j}$ will change as a function of $E_{C,i}$ because higher respiration requires more consumption to hold the biomass at equilibrium. Therefore to isolate the term $E_{C,i}$, we need to write $F_{i,j}$ explicitly.
