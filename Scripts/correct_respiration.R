@@ -15,6 +15,30 @@ correct_respiration = function(usin, output_type = TRUE){
                            apply(usin$imat > 0, 1, sum) > 1 # Species must have more than one food item
   ))
 
+  # Solve the new respiration rates with consumption rates:
+
+  # Separate the imat and prop:
+  imat = usin$imat # row values of imat sets predator feeding preferences!
+  prop = usin$prop # properties of each trophic species
+  Nnodes = dim(imat)[1] # Number of nodes in the food web
+
+  # Create a vector for the consumption rates
+  temp_mat =
+    -1*t(imat)*matrix(prop$Carbon$B, nrow = Nnodes, ncol = Nnodes)/matrix(rowSums(imat*matrix(prop$Carbon$B, nrow = Nnodes, ncol = Nnodes, byrow = T)), nrow = Nnodes, ncol = Nnodes, byrow = T)
+
+  temp_mat[!is.finite(temp_mat)] = 0 # Replace non-finite values with 0 because total consumption was zero in this case
+
+  # Copy this code to use below for corrected respiration:
+  temp_mat2 = -t(temp_mat)
+
+  diag(temp_mat) = prop$Carbon$a*prop$Carbon$p + diag(temp_mat) # Add in a*p term
+
+  # Correct columns to correct respiration:
+  temp_mat3 = matrix(0, nrow = Nnodes, ncol = length(species))
+
+  temp_mat4 = diag(-c(prop$Carbon$B[species]), nrow = length(species), ncol = length(species))
+
+  # Add in the limiting elements:
   for(sp in species){
     # Separate the imat and prop:
     imat = usin$imat # row values of imat sets predator feeding preferences!
@@ -24,15 +48,37 @@ correct_respiration = function(usin, output_type = TRUE){
     Nnodes = dim(imat)[1] # Number of nodes in the food web
     AIJ = comana(usin)$AIJ
 
-    Ec_increased_to = lapply(AIJ, function(x) {-(1/prop$Carbon$B[sp])*sum(x[sp,]*Fij[sp,])})
+    Ek = lapply(AIJ, function(x) {(prop$Carbon$E[sp]*prop$Carbon$B[sp]) + sum(x[sp,]*Fij[sp,])})
 
-    nutlim[sp] = names(AIJ)[which.max(Ec_increased_to)]
+    nutlim[sp] = names(AIJ)[which.min(Ek)]
 
-    usin$prop$Carbon$E[sp] = max(do.call("rbind",Ec_increased_to))
+    temp_mat2[sp,] = AIJ[[which.min(Ek)]][sp,]*temp_mat2[sp,]
 
+    temp_mat3[sp,which(species == sp)] = -prop$Carbon$B[sp]
+  }
+
+
+  # Combine to form the matrix Ahat:
+
+  temp_mat = rbind(temp_mat, temp_mat2[species,])
+
+  temp_mat = cbind(temp_mat, rbind(temp_mat3, temp_mat4))
+
+  bvec = c(prop$Carbon$d*prop$Carbon$B + prop$Carbon$E*prop$Carbon$B, prop$Carbon$E[species]*prop$Carbon$B[species])
+
+  solution = base::solve(temp_mat,bvec)
+
+  # Confirm that this solution is unique by showing Ax = 0 produces x = 0
+  if(any(solve(temp_mat,rep(0, Nnodes + length(species))) != 0)){
+    warning("Solution to the web is not unique!")
   }
 
   nutlim[is.na(nutlim)] = "Carbon"
+
+  Ehat = rep(NA, Nnodes)
+  Ehat[species] = solution[c((Nnodes+1) : (Nnodes + length(species)))]
+
+  usin$prop$Ehat = Ehat
 
   if(output_type){
     print(data.frame(ID = colnames(usin$imat),

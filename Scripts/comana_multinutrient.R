@@ -82,6 +82,7 @@ comana(usin2)
 # Correct respiration:
 source("Scripts/correct_respiration.R")
 
+debugonce(correct_respiration)
 usin3 = correct_respiration(usin)
 
 comana(usin3)
