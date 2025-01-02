@@ -88,6 +88,19 @@ build_foodweb <- function(feeding,
     rm(tdf)
   }
 
+  # Add in an overflow respiration term if Ehat is not listed in the data frame:
+  if(!any(properties$Parameter == "Ehat")){
+    tdf = unique(properties[,c("ID", "Element")])
+
+    tdf = subset(tdf, Element == "Carbon")
+
+    tdf[,c("Parameter")] = c("Ehat")
+    tdf[,c("Value")] = c(0)
+
+    properties = rbind(properties, tdf)
+    rm(tdf)
+  }
+
   Nnodes = dim(feedingmatrix)[1] # Number of nodes in the food web
 
   # Break out the elements into a properties list for easier processing:

@@ -75,10 +75,10 @@ correct_respiration = function(usin, output_type = TRUE){
 
   nutlim[is.na(nutlim)] = "Carbon"
 
-  Ehat = rep(NA, Nnodes)
+  Ehat = rep(0, Nnodes)
   Ehat[species] = solution[c((Nnodes+1) : (Nnodes + length(species)))]
 
-  usin$prop$Ehat = Ehat
+  usin$prop$Carbon$Ehat = Ehat
 
   if(output_type){
     print(data.frame(ID = colnames(usin$imat),

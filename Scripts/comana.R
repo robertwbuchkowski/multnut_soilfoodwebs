@@ -28,7 +28,7 @@ comana <- function(usin,
 
   diag(temp_mat) = prop$Carbon$a*prop$Carbon$p + diag(temp_mat) # Add in a*p term
 
-  consumption = base::solve(temp_mat,(prop$Carbon$d*prop$Carbon$B + prop$Carbon$E*prop$Carbon$B))
+  consumption = base::solve(temp_mat,(prop$Carbon$d*prop$Carbon$B + prop$Carbon$E*prop$Carbon$B + prop$Carbon$Ehat*prop$Carbon$B))
 
   # Confirm that this solution is unique by showing Ax = 0 produces x = 0
   if(any(solve(temp_mat,rep(0, Nnodes)) != 0)){
@@ -86,7 +86,7 @@ comana <- function(usin,
   }
 
   # Calculate carbon mineralization using the production efficiency
-  mineralization[[1]] = prop$Carbon$a*(1-prop$Carbon$p)*consumption + prop$Carbon$E*prop$Carbon$B
+  mineralization[[1]] = prop$Carbon$a*(1-prop$Carbon$p)*consumption + prop$Carbon$E*prop$Carbon$B + prop$Carbon$Ehat*prop$Carbon$B
 
   # Calculate the mineralization rates of the various elements using the comparison to carbon:
 
@@ -95,7 +95,7 @@ comana <- function(usin,
 
     Qhat = prop$Carbon$Q/current_element_properties$Q
 
-    mineralization[[i]] = (1-current_element_properties$p)*current_element_properties$a*rowSums(fmat[[i]]) + (prop$Carbon$E*prop$Carbon$B + # Carbon mineralization rate based on a fixed proportion of biomass
+    mineralization[[i]] = (1-current_element_properties$p)*current_element_properties$a*rowSums(fmat[[i]]) + (prop$Carbon$E*prop$Carbon$B + prop$Carbon$Ehat*prop$Carbon$B + # Carbon mineralization rate based on a fixed proportion of biomass
                              rowSums((AIJ[[i]])* # Net element gain from feeding
                                        fmat$Carbon))* # consumption rates
       Qhat* # multiply by C:X ratio to get back to units of X

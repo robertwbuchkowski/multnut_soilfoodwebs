@@ -40,13 +40,43 @@ usin2 = correct_diet(usin)
 
 comana(usin2)
 
+# Correct production efficiency:
+source("Scripts/correct_productionefficiency.R")
+debugonce(correct_productionefficiency)
+usin3 = correct_productionefficiency(usin)
+
+comana(usin3)$mineralization
+comana(usin)$mineralization
+
+comana(usin)$consumption
+comana(usin3)$consumption
+
+
+# Test p corrections for predator:
+
+sptt = 3
+
+usin_temp = usin
+output = matrix(NA, nrow = 100, ncol = 5)
+output[,1] = seq(0.01, 1, length = 100)
+
+
+for(i in 1:100){
+
+  usin_temp$prop$Carbon$p[sptt] = output[i,1]
+
+  output[i,2:5] = do.call("c", lapply(comana(usin_temp)$mineralization, function(x) unname(x[sptt])))
+
+}
+output
+usin3$prop$Carbon$p[sptt]
+
 # Correct respiration:
 source("Scripts/correct_respiration.R")
-
+debugonce(correct_respiration)
 usin3 = correct_respiration(usin)
 
 comana(usin3)
-
 
 # Test the function with a simple two element community:
 
