@@ -61,7 +61,7 @@ correct_diet <- function(usin,dietlimits = c(NA)){
                rep(0,numfood))
 
       for(i in 2:length(prop)){
-        BVEC = c(BVEC, -prop$Carbon$E[sp]*prop$Carbon$B[sp])
+        BVEC = c(BVEC, -(prop$Carbon$E[sp] + prop$Carbon$Ehat[sp])*prop$Carbon$B[sp])
       }
 
       try(

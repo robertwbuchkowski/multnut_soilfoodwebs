@@ -28,8 +28,13 @@ correct_respiration = function(usin, output_type = TRUE){
 
   temp_mat[!is.finite(temp_mat)] = 0 # Replace non-finite values with 0 because total consumption was zero in this case
 
-  # Copy this code to use below for corrected respiration:
-  temp_mat2 = -t(temp_mat)
+  # Prepare feeding options for code below:
+  temp_mat2 = imat*matrix(prop$Carbon$B, nrow = Nnodes, ncol = Nnodes, byrow = T)/t(matrix(rowSums(imat*matrix(prop$Carbon$B, nrow = Nnodes, ncol = Nnodes, byrow = T)), nrow = Nnodes, ncol = Nnodes, byrow = T))
+
+  temp_mat2[!is.finite(temp_mat2)] = 0 # Replace non-finite values with 0 because total consumption was zero in this case
+
+  # Check relation:
+  testthat::expect_equivalent(-t(temp_mat), temp_mat2)
 
   diag(temp_mat) = prop$Carbon$a*prop$Carbon$p + diag(temp_mat) # Add in a*p term
 
