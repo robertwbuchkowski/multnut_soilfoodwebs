@@ -41,7 +41,9 @@ correct_respiration = function(usin, output_type = TRUE){
   # Correct columns to correct respiration:
   temp_mat3 = matrix(0, nrow = Nnodes, ncol = length(species))
 
-  temp_mat4 = diag(-c(prop$Carbon$B[species]), nrow = length(species), ncol = length(species))
+  temp_mat4 = diag(c(prop$Carbon$B[species]), nrow = length(species), ncol = length(species))
+
+  temp_mat5 = matrix(0, nrow = Nnodes, ncol = Nnodes)
 
   # Add in the limiting elements:
   for(sp in species){
@@ -57,7 +59,7 @@ correct_respiration = function(usin, output_type = TRUE){
 
     nutlim[sp] = names(AIJ)[which.min(Ek)]
 
-    temp_mat2[sp,] = AIJ[[which.min(Ek)]][sp,]*temp_mat2[sp,]
+    temp_mat5[sp,sp] = sum(AIJ[[which.min(Ek)]][sp,]*temp_mat2[sp,])
 
     temp_mat3[sp,which(species == sp)] = -prop$Carbon$B[sp]
   }
@@ -65,11 +67,11 @@ correct_respiration = function(usin, output_type = TRUE){
 
   # Combine to form the matrix Ahat:
 
-  temp_mat = rbind(temp_mat, temp_mat2[species,])
+  temp_mat = rbind(temp_mat, temp_mat5[species,])
 
   temp_mat = cbind(temp_mat, rbind(temp_mat3, temp_mat4))
 
-  bvec = c(prop$Carbon$d*prop$Carbon$B + prop$Carbon$E*prop$Carbon$B, prop$Carbon$E[species]*prop$Carbon$B[species])
+  bvec = c(prop$Carbon$d*prop$Carbon$B + prop$Carbon$E*prop$Carbon$B, -prop$Carbon$E[species]*prop$Carbon$B[species])
 
   solution = base::solve(temp_mat,bvec)
 
