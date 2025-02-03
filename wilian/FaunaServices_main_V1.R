@@ -229,7 +229,18 @@ Data_traits<-Foodweb_matrices$DataTraits
 Data_Resources<-Foodweb_matrices$DataResources
 Foodweb_matrices<-Foodweb_matrices$PreferenceMat
 
-D###3. Energy fluxes estimation-----------
+
+Foodweb_matrices2 <- foodweb.preferences(Data,Raw_GuildsSoil, weight_by_biomass = F)
+Data_traits2<-Foodweb_matrices2$DataTraits
+Data_Resources2<-Foodweb_matrices2$DataResources
+Foodweb_matrices2<-Foodweb_matrices2$PreferenceMat
+
+# Confirm that a change occurred in the first matrix:
+Foodweb_matrices$SMBR_0002_t1[1:3,1:3]
+Foodweb_matrices2$SMBR_0002_t1[1:3,1:3]
+
+
+###3. Energy fluxes estimation-----------
 #Two cases possible:
 #1. "Brose team" approach = only use metabolic as loss -> function foodweb.energyflux
 #2. Add "de Ruiter" approach = also use natural death rates as loss (in addition to metabolic loss)
