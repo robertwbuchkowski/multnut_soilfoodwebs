@@ -1,0 +1,52 @@
+Group	Guild	Abbreviation	BroadCategory	MetabolicType	P	A	L	W	S	B	F	Invt	PPMR	PPMRopt	PPMRwidth	Predatory	Agility	Physical.protection	Metabolites	Proportion.C	Proportion.N	above	epi	hemi	eu
+Resource	Resources: Living plant material	P	Resource	Resource	NA	NA	NA	NA	NA	NA	NA	NA		NA	NA	NA	NA	NA	NA	0.455	0.0168	1	1	1	1
+Resource	Resources: Algae	A	Resource	Resource	NA	NA	NA	NA	NA	NA	NA	NA		NA	NA	NA	NA	NA	NA	0.5	0.043	1	1	1	NA
+Resource	Resources: Leaf and root litter	L	Resource	Resource	NA	NA	NA	NA	NA	NA	NA	NA		NA	NA	NA	NA	NA	NA	0.447	0.0125	NA	1	1	1
+Resource	Resources: Wood litter	W	Resource	Resource	NA	NA	NA	NA	NA	NA	NA	NA		NA	NA	NA	NA	NA	NA	0.5	0.02	NA	1	1	1
+Resource	Resources: Soil organic matter	S	Resource	Resource	NA	NA	NA	NA	NA	NA	NA	NA		NA	NA	NA	NA	NA	NA	0.047	0.004	NA	NA	1	1
+Resource	Resources: Bacteria	B	Resource	Resource	1	NA	1	NA	NA	NA	NA	NA		NA	NA	NA	NA	NA	NA	0.46	0.11	NA	1	1	1
+Resource	Resources: Fungi	F	Resource	Resource	1	NA	1	NA	NA	NA	NA	NA		NA	NA	NA	NA	NA	NA	0.41	0.032	NA	1	1	1
+Nematoda: Plant feeders	Nematoda: Plant feeders	Ne-H	Microfauna	Nematoda	1	0.5	NA	NA	NA	NA	0.5	NA		NA	NA	NA	NA	NA	NA	0.34	0.053	NA	NA	1	1
+Nematoda: Bacterivores	Nematoda: Bacterivores	Ne-B	Microfauna	Nematoda	NA	0.5	NA	NA	NA	1	NA	NA		NA	NA	NA	NA	NA	NA	0.34	0.053	NA	NA	1	1
+Nematoda: Fungivores	Nematoda: Fungivores	Ne-F	Microfauna	Nematoda	NA	NA	NA	NA	NA	NA	1	NA		NA	NA	NA	NA	NA	NA	0.34	0.053	NA	NA	1	1
+Nematoda: Omnivores	Nematoda: Omnivores	Ne-O	Microfauna	Nematoda	NA	0.5	NA	NA	NA	1	NA	1		NA	NA	NA	NA	NA	NA	0.34	0.053	NA	NA	1	1
+Nematoda: Predators	Nematoda: Predators	Ne-P	Microfauna	Nematoda	NA	NA	NA	NA	NA	0.5	NA	1		NA	NA	0.7	NA	NA	NA	0.34	0.053	NA	NA	1	1
+Nematoda: Animal parasites	Nematoda: Animal parasites	Ne-AP	Microfauna	Nematoda	NA	NA	NA	NA	NA	NA	NA	1	parasitic	-2	2	NA	NA	0.2	NA	0.34	0.053	NA	1	1	1
+Nematoda	Nematoda	Ne	Microfauna	Nematoda	1	0.5	NA	NA	NA	1	1	1		NA	NA	NA	NA	NA	NA	0.34	0.053	NA	NA	1	1
+Oribatida	Oribatida	Ori	Microarthropods	Oribatida	NA	0.5	1	NA	NA	0.5	1	0.5		NA	NA	NA	NA	0.4	0.7	0.389	0.089	NA	NA	1	0.5
+Mesostigmata	Mesostigmata	Me	Microarthropods	Mesostigmata	NA	NA	NA	NA	NA	NA	0.5	1		NA	NA	0.7	NA	0.7	NA	0.413	0.105	NA	NA	1	0.5
+Prostigmata	Prostigmata	Prost	Microarthropods	Prostigmata	0.5	0.5	NA	NA	NA	0.5	1	1		NA	NA	0.7	NA	0.7	NA	0.471	0.095	NA	0.5	1	0.5
+Schizomida	Schizomida	Schi	Microarthropods	Arachnida	NA	NA	NA	NA	NA	NA	NA	1		NA	NA	0.7	NA	NA	NA	0.402	0.095	NA	0.5	1	0.5
+Pseudoscorpiones	Pseudoscorpiones	Pssc	Microarthropods	Arachnida	NA	NA	NA	NA	NA	NA	NA	1		NA	NA	0.7	NA	NA	NA	0.402	0.095	NA	0.5	1	0.5
+Symphyla	Symphyla	Sym	Microarthropods	Progoneata	1	0.5	0.5	NA	NA	NA	1	0.5		NA	NA	NA	NA	NA	0.4	0.331	0.081	NA	NA	1	1
+Pauropoda	Pauropoda	Pau	Microarthropods	Progoneata	0.5	NA	1	NA	0.5	0.5	1	NA		NA	NA	NA	NA	NA	NA	0.331	0.081	NA	NA	1	1
+Diplura: Detritivores	Diplura: Detritivores	Dplu-D	Microarthropods	Invertebrates	0.5	NA	1	NA	NA	0.5	1	0.5		NA	NA	NA	NA	NA	NA	0.468	0.108	NA	NA	1	1
+Diplura: Predators	Diplura: Predators	Dplu-C	Microarthropods	Invertebrates	0.5	NA	0.5	NA	NA	NA	0.5	1		NA	NA	0.7	NA	NA	NA	0.468	0.108	NA	NA	1	1
+Protura	Protura	Protu	Microarthropods	Invertebrates	NA	NA	NA	NA	NA	NA	1	NA		NA	NA	NA	NA	NA	NA	0.451	0.109	NA	NA	1	1
+Collembola	Collembola	Cla	Microarthropods	Insecta	0.5	0.5	1	NA	NA	0.5	1	0.5		NA	NA	NA	0.7	NA	NA	0.451	0.109	NA	1	1	1
+araneae	Araneae	Ar	Insects, arachnids	Arachnida	NA	NA	NA	NA	NA	NA	NA	1	venom and web	0.64	1.44	0.7	NA	0.7	NA	0.488	0.111	0.5	1	0.5	NA
+Opiliones	Opiliones	Opi	Insects, arachnids	Arachnida	0.5	NA	NA	NA	NA	NA	NA	1		NA	NA	0.7	NA	NA	NA	0.465	0.12	0.5	1	NA	NA
+diplopoda	Diplopoda	Dpod	Isopods, myriapods	Progoneata	NA	0.5	1	0.5	0.5	NA	0.5	NA		NA	NA	NA	NA	0.4	0.7	0.308	0.054	NA	1	1	0.5
+chilopoda	Chilopoda	Chi	Isopods, myriapods	Chilopoda	NA	NA	NA	NA	NA	NA	NA	1	venom	0.8	1.2	0.7	NA	0.7	NA	0.476	0.117	NA	0.5	1	0.5
+isopoda	Isopoda	Iso	Isopods, myriapods	Isopoda	0.5	0.5	1	0.5	0.5	0.5	1	NA		NA	NA	NA	NA	0.4	NA	0.319	0.066	NA	1	1	NA
+dermaptera	Dermaptera	Der	Insects, arachnids	Insecta	0.5	0.5	1	NA	NA	0.5	0.5	0.5		NA	NA	1	NA	NA	0.4	0.527	0.092	NA	1	1	NA
+orthoptera	Orthoptera	Ort	Insects, arachnids	Insecta	1	NA	0.5	NA	NA	NA	NA	0.5		NA	NA	NA	0.7	0.7	NA	0.479	0.105	0.5	1	0.5	0
+cockroaches	Blattodea	Bla	Insects, arachnids	Insecta	0.5	0.5	1	0.5	NA	NA	0.5	0.5		NA	NA	NA	NA	0.7	0.7	0.47	0.111	0.5	1	0.5	NA
+termites	Termites	Te	Insects, arachnids	Insecta	0.5	0.5	1	1	1	0.5	0.5	NA		NA	NA	NA	NA	0.7	0.7	0.453	0.11	NA	1	1	0.5
+thysanoptera	Thysanoptera	Thy	Insects, arachnids	Insecta	1	NA	NA	NA	NA	NA	1	NA		NA	NA	NA	NA	NA	NA	0.482	0.095	NA	1	NA	NA
+Hemiptera: Auchenorrhyncha	Hemiptera: Auchenorrhyncha	He-Au	Insects, arachnids	Insecta	1	NA	NA	NA	NA	NA	NA	NA		NA	NA	NA	0.7	NA	NA	0.459	0.081	0.5	0.5	0.5	0.5
+Hemiptera: Sternorrhyncha	Hemiptera: Sternorrhyncha	He-Ste	Insects, arachnids	Insecta	1	NA	NA	NA	NA	NA	NA	NA		NA	NA	NA	NA	0.7	0.7	0.459	0.081	NA	1	1	1
+Hemiptera: Heteroptera predators	Hemiptera: Heteroptera predators	He-He-C	Insects, arachnids	Insecta	NA	NA	NA	NA	NA	NA	NA	1		NA	NA	0.7	NA	NA	NA	0.459	0.091	0.5	1	NA	NA
+Hemiptera: Heteroptera herbivores	Hemiptera: Heteroptera herbivores	He-He-H	Insects, arachnids	Insecta	1	NA	NA	NA	NA	NA	NA	NA		NA	NA	0.7	NA	NA	NA	0.459	0.091	0.5	1	NA	NA
+hemiptera	Hemiptera	He	Insects, arachnids	Insecta	1	NA	NA	NA	NA	NA	NA	NA		NA	NA	NA	1	0.7	0.7	0.459	0.081	0.5	1	0.5	0.5
+Psocoptera	Psocoptera	Pso	Insects, arachnids	Insecta	0.5	0.5	NA	NA	NA	0.5	1	NA		NA	NA	NA	NA	NA	NA	0.463	0.097	0.5	1	1	NA
+Hymenoptera: Parasitoids	Hymenoptera: Parasitoids	Hym	Insects, arachnids	Insecta	NA	NA	NA	NA	NA	NA	NA	1	parasitoid	1	1.5	NA	NA	NA	NA	0.482	0.113	NA	1	0.5	NA
+ants	Formicidae: Predators/scavengers	Ant-C	Insects, arachnids	Insecta	1	NA	NA	NA	NA	NA	0.5	1	pack hunting | limited cannibalism	0.6	1.6	0.7	NA	0.7	NA	0.482	0.113	0.5	1	0.5	0.5
+Coleoptera: Decomposers	Coleoptera: Decomposers	Cpt-D	Insects, arachnids	Insecta	1	NA	1	NA	NA	NA	1	1		NA	NA	NA	NA	0.7	0.7	0.421	0.1	NA	1	1	1
+Coleoptera: Herbivores	Coleoptera: Herbivores	Cpt-H	Insects, arachnids	Insecta	1	NA	NA	1	NA	NA	1	NA		NA	NA	NA	NA	0.7	0.7	0.421	0.1	NA	1	1	1
+Coleoptera: Predators	Coleoptera: Predators	Cpt-P	Insects, arachnids	Insecta	0.5	NA	NA	NA	NA	NA	0.5	1		NA	NA	0.7	NA	0.7	0.7	0.421	0.1	NA	1	1	1
+coleoptera	Coleoptera	Cpt	Insects, arachnids	Insecta	1	NA	0.5	0.5	NA	0.5	0.5	1		NA	NA	0.7	NA	0.7	0.7	0.421	0.09	1	1	1	1
+lepidoptera	Lepidoptera	Le	Insects, arachnids	Insecta	1	0.5	0.5	NA	NA	NA	0.5	NA		NA	NA	NA	NA	NA	NA	0.515	0.082	1	1	1	NA
+diptera	Diptera	Dipt	Insects, arachnids	Insecta	0.5	NA	1	0.5	NA	NA	1	1		NA	NA	NA	NA	NA	NA	0.453	0.096	1	1	1	0.5
+earthworms	Lumbricina	Ew	Oligochaetes, molluscs	Clitellata	NA	0.5	1	NA	1	0.5	0.5	0.5	filtering the environment	4.5	0.75	NA	NA	NA	1	0.448	0.122	NA	0.5	1	1
+gastropoda	Gastropoda	Ga	Oligochaetes, molluscs	Invertebrates	0.5	0.5	1	0.5	0.5	1	1	0.5		NA	NA	NA	NA	0.4	0.4	0.344	0.068	0.5	1	1	0.5

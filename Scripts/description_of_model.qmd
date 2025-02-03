@@ -1,7 +1,7 @@
 ---
 title: "Multiple Nutrient Soil Food Web Analysis"
 author: "Robert W Buchkowski"
-format: html
+format: pdf
 editor: visual
 ---
 
@@ -68,9 +68,13 @@ $$
 We can calculate mineralization rates using equations 1 to 3.
 
 $$
-\sum_{j} (a_{C,i}p_{C,i}F_{i,j}) -d_iC_i - E_{C,i}C_i -\sum_j M_{i,j} = \hat{Q}_{k,i}(\sum_{j} (\frac{a_{k,i}p_{k,i}F_{i,j}}{\hat{Q}_{k,i}}) - \frac{d_iC_i}{\hat{Q}_{k,i}} - \frac{E_{k,i}C_i}{\hat{Q}_{k,i}} - \frac{1}{\hat{Q}_{k,i}}\sum_j M_{i,j})
-$$ {#eq-4a} $$ 
-\sum_{j} (a_{C,i}p_{C,i}F_{i,j}) -d_iC_i - E_{C,i}C_i -\sum_j M_{i,j} = \hat{Q}_{k,i}\sum_{j} (\frac{a_{k,i}p_{k,i}F_{i,j}}{\hat{Q}_{k,j}}) - d_iC_i - E_{k,i}C_i - \sum_j M_{i,j}
+\sum_{j} (a_{C,i}p_{C,i}F_{i,j}) -d_iC_i - E_{C,i}C_i -\sum_j M_{i,j} = \\ 
+\hat{Q}_{k,i}(\sum_{j} (\frac{a_{k,i}p_{k,i}F_{i,j}}{\hat{Q}_{k,i}}) - \frac{d_iC_i}{\hat{Q}_{k,i}} - \frac{E_{k,i}C_i}{\hat{Q}_{k,i}} - \frac{1}{\hat{Q}_{k,i}}\sum_j M_{i,j})
+$$ {#eq-4a} 
+
+$$ 
+\sum_{j} (a_{C,i}p_{C,i}F_{i,j}) -d_iC_i - E_{C,i}C_i -\sum_j M_{i,j} = \\ 
+\hat{Q}_{k,i}\sum_{j} (\frac{a_{k,i}p_{k,i}F_{i,j}}{\hat{Q}_{k,j}}) - d_iC_i - E_{k,i}C_i - \sum_j M_{i,j}
 $$ {#eq-4b}
 
 We can cancel terms for death rate and predation, since these represent losses of all elements at the proportion that they exist in the biomass.
@@ -118,12 +122,12 @@ $$ {#eq-9}
 With this notation, we can define the following quadratic program:
 
 $$
-\begin{align}
+\begin{aligned}
 \min_{f_{i,j}} & \quad \sum_{j}^{N} {(b_{i,j} - f_{i,j})^2} \\
 \text{subject to} & \quad \sum_{j} f_{i,j} = 1 \\
 & \quad -f_{i,j} \geq -L_{i,j} \forall i \in 1:N \\
 & \quad \sum_{j} \mathfrak{a}_{k,i,j}f_{i,j}F_{i,T} \geq -E_{C,i}C_i
-\end{align}
+\end{aligned}
 $$ {#eq-10}
 
 In the above program, we minimize the differences between the abundance of the food in the environment and the diet, while ensuring food consumption rate remains the same, that any user-defined dietary limits $L_{i,j}$ are met, and that mineralization rate remains positive. The function **quadprog::solve.QP** only accepts equalities or greater than or equal to expressions, so the program is written with several negative values to fit that notation.
@@ -135,12 +139,14 @@ Here, we benefit from representing all nutrient deficiencies in units of carbon.
 Given this assumption, we can write the following linear program:
 
 $$
-\begin{align}
+\begin{aligned}
 \max_{f_{i,j}} & \quad \sum_{k} \sum_{j}^{N} \mathfrak{a}_{k,i,j}f_{i,j}F_{i,T} \\
 \text{subject to} & \quad \sum_{j} f_{i,j} = 1 \\
-& \quad -f_{i,j} \geq -L_{i,j} \forall i \in 1:N
-\end{align}
-$$ {#eq-11} The objective function in the above program sums the mineralization across all elements after calculating the net mineralization of each element in units of carbon. By dealing in carbon, all elements are compared in the same currency and therefore can be summed.
+& \quad -f_{i,j} \geq -L_{i,j} \forall i \in 1:N \\
+\end{aligned}
+$$ {#eq-11} 
+
+The objective function in the above program sums the mineralization across all elements after calculating the net mineralization of each element in units of carbon. By dealing in carbon, all elements are compared in the same currency and therefore can be summed.
 
 ## Deficiencies unaddressed by diet
 
@@ -151,9 +157,9 @@ We can calculate this reduction in growth by calculating the amount of extra car
 Using the equation for the element in shortest supply, which is identified as the one where $E_{k,i}$ is smallest, we can calculate a new $E_{C,i}$ using equation (8):
 
 $$
-\begin{align}
+\begin{aligned}
 E_{k,i}C_i \geq 0 & \quad \forall k
-\end{align}
+\end{aligned}
 $$ {#eq-13a}
 
 If we already know that the mineralization rate is less than zero, we can calculate the case where mineralization rate is zero for the element in shortest supply.

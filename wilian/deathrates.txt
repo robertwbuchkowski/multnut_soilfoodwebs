@@ -1,0 +1,16 @@
+Group	death_rate
+ants	4
+araneae	0.75
+chilopoda	0.5
+cockroaches	1
+coleoptera	0.4
+dermaptera	1
+diplopoda	0.2
+diptera	6
+earthworms	0.5
+gastropoda	0.5
+hemiptera	6
+isopoda	0.5
+lepidoptera	6
+orthoptera	0.75
+termites	0.75
