@@ -41,9 +41,9 @@ Starting from equation (1), we solve the following matrix problem $Ax=b$, where 
 
 $$
 A = \begin{pmatrix}
-a_{12}p_{1} - \frac{w_{11}X_1}{\sum_{h=1}^N{w_{1h}X_h}} & ... & - \frac{w_{N1}X_1}{\sum_{h=1}^N{w_{Nh}X_h}} \\
+p_{1}(\sum_{j=1}^N\frac{a_{1j}w_{1j}X_j}{\sum_{h=1}^N{w_{1h}X_h}}) - \frac{w_{11}X_1}{\sum_{h=1}^N{w_{1h}X_h}} & ... & - \frac{w_{N1}X_1}{\sum_{h=1}^N{w_{Nh}X_h}} \\
 \vdots &  & \vdots \\
-- \frac{w_{1N}X_N}{\sum_{h=1}^N{w_{1h}X_h}} & ... & a_{NN}p_{N} - \frac{w_{NN}X_N}{\sum_{h=1}^N{w_{Nh}X_h}} \\
+- \frac{w_{1N}X_N}{\sum_{h=1}^N{w_{1h}X_h}} & ... & p_{N}(\sum_{j=1}^N\frac{a_{Nj}w_{Nj}X_j}{\sum_{h=1}^N{w_{Nh}X_h}}) - \frac{w_{NN}X_N}{\sum_{h=1}^N{w_{Nh}X_h}} \\
 \end{pmatrix}
 $$
 
@@ -86,7 +86,7 @@ $$ {#eq-5}
 Then we can combine the terms that sum across all other species $j$ and factor out the feeding rate.
 
 $$
-E_{k,i}C_i = E_{C,i}C_i + \sum_{j} (\frac{\hat{Q}_{k,i}}{\hat{Q}_{k,j}}a_{k,i}p_{k,i}-a_{C,i}p_{C,i})F_{i,j}
+E_{k,i}C_i = E_{C,i}C_i + \sum_{j} (\frac{\hat{Q}_{k,i}}{\hat{Q}_{k,j}}a_{k,i,j}p_{k,i}-a_{C,i,j}p_{C,i})F_{i,j}
 $$ {#eq-6}
 
 This equation provides an easy interpretation of how mineralization is determined. The amount of element $k$ mineralized is $\frac{E_{k,i}C_i}{\hat{Q}_{k,i}}$ in its own units, but because the nutrient stoichiometry is fixed, we can express it in units of carbon to make it easier to compare across multiple chemical elements. This value $E_{k,i}C_i$ is equal to the amount of carbon mineralized $E_{C,i}C_i$ plus the additional gain or loss of the element $k$ from the food, considering assimilation and production efficiency. So, when the second term is positive, there is relatively more of element $k$ mineralized than carbon. When it is negative, there is relatively less.

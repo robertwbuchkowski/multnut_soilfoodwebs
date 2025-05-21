@@ -87,11 +87,8 @@ plot(g,
 We first need to create the interaction matrix with feeding preferences. This can be done with a simple table of Predator, Prey, Preference. This table also contains assimilation efficiencies for each feeding interaction. The table looks like this.
 
 ```{r}
-# Load tibble package
-library(tibble)
-
 # Create the tibble
-interaction_table <- tibble(
+interaction_table <- data.frame(
   Predator = c("isopod", "isopod", "fungi"),
   Prey = c("detritus", "fungi", "detritus"),
   Preference = c(1, 1, 1),
@@ -101,7 +98,7 @@ interaction_table <- tibble(
 )
 
 # Display the tibble
-interaction_table
+structure(interaction_table)
 ```
 
 ## Create the parameters
@@ -109,19 +106,16 @@ interaction_table
 Next we need to assemble the parameters for the model (except interactions and assimilation efficiencies). This can be a long list depending on the size of the food web. Again, we can create a table.
 
 ```{r}
-# Load tibble package
-library(tibble)
-
 # Create the tibble
-parameter_table <- tibble(
+parameter_table <- data.frame(
   ID = c("isopod","fungi","detritus","isopod","fungi","detritus","isopod","fungi","detritus","isopod","fungi","detritus","isopod","fungi","detritus","isopod","fungi","detritus","isopod","fungi","detritus","isopod","fungi","detritus","isopod","fungi","detritus","isopod","fungi","detritus","isopod","fungi","detritus","isopod","fungi","detritus"),
   Element = c("Carbon", "Carbon", "Carbon", "Nitrogen","Nitrogen","Nitrogen", "Phosphorus","Phosphorus","Phosphorus","Carbon", "Carbon", "Carbon", "Nitrogen","Nitrogen","Nitrogen", "Phosphorus","Phosphorus","Phosphorus","Carbon", "Carbon", "Carbon","Carbon", "Carbon", "Carbon","Carbon", "Carbon", "Carbon","Carbon", "Carbon", "Carbon","Carbon", "Carbon", "Carbon","Carbon", "Carbon", "Carbon"),
   Parameter = c(rep("Q", 9), rep("canIMM", 9), rep("E",3), rep("d",3), rep("B",3),rep("DetritusRecycling",3), rep("isDetritus",3), rep("isPlant",3)),
-  Value = c(0.5, 0.5, 0.5, 0.1, 0.1, 0.025, 0.015, 0.008, 0.008, 0,0,0,0,1,0,0,1,0, 0.2, 0.05, 0, 1, 0.2, 0, 5, 20, 100,0,0,1,0,0,1,0,0,0)
+  Value = c(0.5, 0.5, 0.5, 0.1, 0.1, 0.025, 0.015, 0.01, 0.008, 0,0,0,0,1,0,0,1,0, 0.2, 0.05, 0, 1, 0.2, 0, 5, 20, 100,0,0,1,0,0,1,0,0,0)
 )
 
 # Display the tibble
-parameter_table
+structure(parameter_table)
 ```
 
 ## Assembling the food web
@@ -161,13 +155,16 @@ Starting from equation (1), we solve the following matrix problem $Ax=b$, where 
 
 ## Calculating Carbon Fluxes (A matrix)
 
+
+<span style="font-size: 70%;">
 $$
 A = \begin{pmatrix}
-a_{12}p_{1} - \frac{w_{11}X_1}{\sum_{h=1}^N{w_{1h}X_h}} & ... & - \frac{w_{N1}X_1}{\sum_{h=1}^N{w_{Nh}X_h}} \\
+p_{1}(\sum_{j=1}^N\frac{a_{1j}w_{1j}X_j}{\sum_{h=1}^N{w_{1h}X_h}}) - \frac{w_{11}X_1}{\sum_{h=1}^N{w_{1h}X_h}} & ... & - \frac{w_{N1}X_1}{\sum_{h=1}^N{w_{Nh}X_h}} \\
 \vdots &  & \vdots \\
-- \frac{w_{1N}X_N}{\sum_{h=1}^N{w_{1h}X_h}} & ... & a_{NN}p_{N} - \frac{w_{NN}X_N}{\sum_{h=1}^N{w_{Nh}X_h}} \\
+- \frac{w_{1N}X_N}{\sum_{h=1}^N{w_{1h}X_h}} & ... & p_{N}(\sum_{j=1}^N\frac{a_{Nj}w_{Nj}X_j}{\sum_{h=1}^N{w_{Nh}X_h}}) - \frac{w_{NN}X_N}{\sum_{h=1}^N{w_{Nh}X_h}} \\
 \end{pmatrix}
 $$
+</span>
 
 ## Calculating Carbon Fluxes (b and x vectors)
 $$
@@ -204,18 +201,76 @@ output = comana(foodweb)
 untrace(comana)
 ```
 
+## Results of the Carbon calculation:
 
-## Bullets
-
-When you click the **Render** button a document will be generated that includes:
-
--   Content authored with markdown
--   Output from executable code
-
-## Code
-
-When you click the **Render** button a presentation will be generated that includes both content and the output of embedded code. You can embed code like this:
-
-```{r}
-1 + 1
+The solution to $Ax=b$:
+```{r, echo = T}
+comana(foodweb)$consumption
 ```
+With the feeding preferences, we can convert these total consumption rates into consumption from each food source.
+```{r, echo = T}
+comana(foodweb)$fmat$Carbon
+```
+
+## Calculating the fluxes of other elements:
+
+With knowledge of the carbon flux, we can calculate the flux of all other elements.To simplify our notation, we will call the ratio of carbon to each element $\frac{Q_{C,i}}{Q_{k,i}} = \hat{Q}_{k,i}$. This is fixed in our model.
+
+Since have the fluxes in units of carbon, all we need to do is multiply them by the carbon to element ratio of the node being eaten to get the fluxes for all the other elements. For example:
+
+```{r, echo = T}
+comana(foodweb)$fmat$Nitrogen
+```
+
+## Calculating the mineralization rates:
+
+Now that we know the consumption of all elements, we can calculate the amount of each element that is available for growth after accounting for assimilation and production efficiencies. This information is used to determine each species mineralization rate $E_{k,i}$ for each element (in units of carbon!).
+
+$$
+E_{k,i}C_i = E_{C,i}C_i + \sum_{j} (\frac{\hat{Q}_{k,i}}{\hat{Q}_{k,j}}a_{k,i,j}p_{k,i}-a_{C,i,j}p_{C,i})F_{i,j}
+$$
+
+## Understanding the nutrients in each food source:
+
+Our mineralization rate formula tells us the nutrient balance for each food source, which we call $\mathfrak{a}_{k,i,j} = \frac{\hat{Q}_{k,i}}{\hat{Q}_{k,j}}a_{k,i,j}p_{k,i}-a_{C,i,j}p_{C,i}$ and save in the results.
+
+```{r, echo = T}
+comana(foodweb)$AIJ$Nitrogen
+comana(foodweb)$AIJ$Phosphorus
+```
+
+## Output mineralization rates:
+Using these data, we calculate the net mineralziation rate for each node (in units of that element):
+```{r, echo = T}
+comana(foodweb)$mineralization
+```
+
+## Negative mineralization rates:
+These mineralization rates are negative because the animals are not getting enough nutrients and `comana` is not able to adjust their feeding or physiology to balance demand. We do this with other functions. We can:
+
+1. Modify the diet.
+1. Increase carbon mineralization (i.e., respiration)
+
+## Diet alteration:
+One option is to modify their diet to eat more high nutrient food.
+```{r, echo = T}
+correct_diet(foodweb)$imat
+```
+```{r, echo = T}
+comana(correct_diet(foodweb))$mineralization
+```
+
+## Increased respiration:
+Another option is to increase their respiration rate, which we call $\hat{E}$.
+```{r, echo = T}
+foodweb2 = correct_respiration(foodweb)
+foodweb2$prop$general$Carbon
+```
+
+
+## New mineralization rates:
+```{r, echo = T}
+comana(foodweb2)$mineralization
+```
+
+*Note* fungi still have negative nitrogen mineralization, because we flagged them as being able to access inorganic nitrogen using canIMM = 1.
