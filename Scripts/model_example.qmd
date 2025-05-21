@@ -1,0 +1,221 @@
+---
+title: "Example of Multiple Nutrient Soil Food Webs"
+author: "Robert Buchkowski"
+format: revealjs
+theme: simple
+editor: visual
+---
+
+## Model formulation
+
+The multiple nutrient soil food web model makes several important assumptions including:
+
+1.  The system is well mixed.
+
+2.  The measurements of biomass are approximately at equilibrium.
+
+3.  All external inputs or outputs are included in the parameterization (e.g., death rates).
+
+4.  All chemical elements included in the model are essential and cannot be substituted.
+
+## Model description
+
+The model is based on a Lotka-Volterra population model between nodes wherein the amount of each element, *k*, is represented for each node in the food web, *X*. The biomass in each node is indexed in units of carbon, so we can use two equations to represent all of the elements in the food web: one for carbon and another repeated for every other element.
+
+## Model equations
+
+$$
+\frac{dX_{C,i}}{dt} = \sum_{j} (a_{C,i,j}p_{C,i}F_{i,j}) -d_iC_i - E_{C,i}C_i -\sum_j M_{i,j}
+$$ {#eq-1}
+
+$$
+\begin{align}
+\frac{dX_{k,i}}{dt} &= \sum_{j} (a_{k,i,j}p_{k,i}F_{i,j}\frac{Q_{k,j}}{Q_{C,j}}) - d_iC_i\frac{Q_{k,i}}{Q_{C,i}} \\
+  & - E_{k,i}C_i\frac{Q_{k,i}}{Q_{C,i}} - \frac{Q_{k,i}}{Q_{C,i}}\sum_j M_{i,j}
+\end{align}
+$$ {#eq-2}
+
+## Parameters
+
+The model contains the following parameters:
+
+::: {.cell}
+\begin{array}{|c|l|}
+\hline
+\textbf{Parameter} & \textbf{Description} \\
+\hline
+a_{i,j} & \text{Assimilation efficiency} \\
+p_i & \text{Production efficiency} \\
+Q_i & \text{Nutrient proportion} \\
+F_{i,j} & \text{Consumption rate} \\
+d_i & \text{Death rate} \\
+E_{k,i} & \text{Respiration / Mineralization rate} \\
+\hline
+\end{array}
+:::
+
+## Example food web
+
+Let's complete a simple example food web to show how the model calculates flux rates.
+
+```{r}
+library(igraph)
+
+# Define edges: isopods eat detritus
+edges <- c("detritus","isopod", "fungi", "isopod", "detritus", "fungi")
+g <- make_graph(edges = edges, directed = TRUE)
+
+# Define custom layout: isopods on top, detritus on bottom
+layout_matrix <- matrix(c(
+  -1, 0,   # detritus (bottom left)
+   0, 1,   # isopod (top center)
+   1, 0.25    # fungi (bottom right)
+), ncol = 2, byrow = TRUE)
+
+# Plot the graph
+plot(g,
+     layout = layout_matrix,
+     vertex.color = "lightblue",
+     vertex.size = 100,
+     vertex.label.cex = 1.5,
+     edge.arrow.size = 0.6,
+     main = "Isopod-Detritus Network")
+```
+
+## Create the interaction matrix
+
+We first need to create the interaction matrix with feeding preferences. This can be done with a simple table of Predator, Prey, Preference. This table also contains assimilation efficiencies for each feeding interaction. The table looks like this.
+
+```{r}
+# Load tibble package
+library(tibble)
+
+# Create the tibble
+interaction_table <- tibble(
+  Predator = c("isopod", "isopod", "fungi"),
+  Prey = c("detritus", "fungi", "detritus"),
+  Preference = c(1, 1, 1),
+  aCarbon = c(0.3, 0.8, 0.8),
+  aNitrogen = c(0.25, 0.75, 0.9),
+  aPhosphorus = c(0.22, 0.73, 0.91)
+)
+
+# Display the tibble
+interaction_table
+```
+
+## Create the parameters
+
+Next we need to assemble the parameters for the model (except interactions and assimilation efficiencies). This can be a long list depending on the size of the food web. Again, we can create a table.
+
+```{r}
+# Load tibble package
+library(tibble)
+
+# Create the tibble
+parameter_table <- tibble(
+  ID = c("isopod","fungi","detritus","isopod","fungi","detritus","isopod","fungi","detritus","isopod","fungi","detritus","isopod","fungi","detritus","isopod","fungi","detritus","isopod","fungi","detritus","isopod","fungi","detritus","isopod","fungi","detritus","isopod","fungi","detritus","isopod","fungi","detritus","isopod","fungi","detritus"),
+  Element = c("Carbon", "Carbon", "Carbon", "Nitrogen","Nitrogen","Nitrogen", "Phosphorus","Phosphorus","Phosphorus","Carbon", "Carbon", "Carbon", "Nitrogen","Nitrogen","Nitrogen", "Phosphorus","Phosphorus","Phosphorus","Carbon", "Carbon", "Carbon","Carbon", "Carbon", "Carbon","Carbon", "Carbon", "Carbon","Carbon", "Carbon", "Carbon","Carbon", "Carbon", "Carbon","Carbon", "Carbon", "Carbon"),
+  Parameter = c(rep("Q", 9), rep("canIMM", 9), rep("E",3), rep("d",3), rep("B",3),rep("DetritusRecycling",3), rep("isDetritus",3), rep("isPlant",3)),
+  Value = c(0.5, 0.5, 0.5, 0.1, 0.1, 0.025, 0.015, 0.008, 0.008, 0,0,0,0,1,0,0,1,0, 0.2, 0.05, 0, 1, 0.2, 0, 5, 20, 100,0,0,1,0,0,1,0,0,0)
+)
+
+# Display the tibble
+parameter_table
+```
+
+## Assembling the food web
+
+Next we can assemble the food web.
+
+```{r, echo = T}
+# Load the package:
+library(multnutFW)
+
+# Assemble the food web:
+foodweb = build_foodweb(feeding = as.data.frame(interaction_table), properties = as.data.frame(parameter_table))
+
+structure(foodweb)
+```
+
+## Calculating flux rates
+
+The package calculates flux rates by first focusing on **Carbon** and then expanding to other nutrients. The `comana` function is adheres to fixed body stoichiometry and does not correct it for nutrient imbalance automatically.
+
+Let's explore how the **Carbon** calculations work.
+
+## Calculating Carbon Fluxes
+
+We can solve for the consumption rates using only the equations for carbon and then make modifications to this equation to balance demand for multiple elements. We define the consumption rates based on the availability of each food item and any preference weights set in the feeding preference matrix. We call these preferences $w_{ij}$. This leads to the following equation for each consumption rate.
+
+$$
+F_{ij} = \frac{w_{ij}X_i}{\sum_{h=1}^N{w_{ih}X_h}}\sum_j^N{F_{ij}}
+$$
+
+
+## Calculating Carbon Fluxes (cont.)
+
+To solve the carbon equation, we use the full system of equations and assume that changes over time are zero or $\frac{dX_{C,i}}{dt}=0$. We are solving for total consumption rate of each species, which is $\sum_j^N{F_{ij}}$.
+
+Starting from equation (1), we solve the following matrix problem $Ax=b$, where $x$ is a vector of total consumption rates for each species, $A$ is a matrix of predation rates, and $b$ is a vector of death rates and respiration rates.
+
+## Calculating Carbon Fluxes (A matrix)
+
+$$
+A = \begin{pmatrix}
+a_{12}p_{1} - \frac{w_{11}X_1}{\sum_{h=1}^N{w_{1h}X_h}} & ... & - \frac{w_{N1}X_1}{\sum_{h=1}^N{w_{Nh}X_h}} \\
+\vdots &  & \vdots \\
+- \frac{w_{1N}X_N}{\sum_{h=1}^N{w_{1h}X_h}} & ... & a_{NN}p_{N} - \frac{w_{NN}X_N}{\sum_{h=1}^N{w_{Nh}X_h}} \\
+\end{pmatrix}
+$$
+
+## Calculating Carbon Fluxes (b and x vectors)
+$$
+b = \begin{pmatrix}
+d_1X_1 + E_{C,1}X_1 \\
+\vdots \\
+d_NX_N + E_{C,N}X_N \\
+\end{pmatrix}
+$$
+
+$$
+x = \begin{pmatrix}
+\sum_j^N{F_{1j}} \\
+\vdots \\
+\sum_j^N{F_{Nj}} \\
+\end{pmatrix}
+$$
+
+## Demonstrate of calculations for our food web
+
+Here are the matrix outputs for each step in the example food web:
+
+A matrix:
+```{r}
+invisible(trace(multnutFW::comana, quote(print(temp_mat)),at = 12))
+output = comana(foodweb)
+untrace(comana)
+```
+B Vector:
+```{r}
+invisible(trace(multnutFW::comana, quote(print((prop$Carbon$d * prop$Carbon$B + 
+        prop$Carbon$E * prop$Carbon$B + prop$Carbon$Ehat * prop$Carbon$B))),at = 12))
+output = comana(foodweb)
+untrace(comana)
+```
+
+
+## Bullets
+
+When you click the **Render** button a document will be generated that includes:
+
+-   Content authored with markdown
+-   Output from executable code
+
+## Code
+
+When you click the **Render** button a presentation will be generated that includes both content and the output of embedded code. You can embed code like this:
+
+```{r}
+1 + 1
+```

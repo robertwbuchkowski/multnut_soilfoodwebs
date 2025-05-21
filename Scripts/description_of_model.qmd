@@ -10,11 +10,11 @@ editor: visual
 The model is based on a Lotka-Volterra population model between nodes wherein the amount of each element, *k*, is represented for each node in the food web, *X*. The biomass in each node is indexed in units of carbon, so we can use two equations to represent all of the elements in the food web: one for carbon and another for every other element.
 
 $$
-\frac{dX_{C,i}}{dt} = \sum_{j} (a_{C,i}p_{C,i}F_{i,j}) -d_iC_i - E_{C,i}C_i -\sum_j M_{i,j}
+\frac{dX_{C,i}}{dt} = \sum_{j} (a_{C,i,j}p_{C,i}F_{i,j}) -d_iC_i - E_{C,i}C_i -\sum_j M_{i,j}
 $$ {#eq-1}
 
 $$
-\frac{dX_{k,i}}{dt} = \sum_{j} (a_{k,i}p_{k,i}F_{i,j}\frac{Q_{k,j}}{Q_{C,j}}) - d_iC_i\frac{Q_{k,i}}{Q_{C,i}} - E_{k,i}C_i\frac{Q_{k,i}}{Q_{C,i}} - \frac{Q_{k,i}}{Q_{C,i}}\sum_j M_{i,j}
+\frac{dX_{k,i}}{dt} = \sum_{j} (a_{k,i,j}p_{k,i}F_{i,j}\frac{Q_{k,j}}{Q_{C,j}}) - d_iC_i\frac{Q_{k,i}}{Q_{C,i}} - E_{k,i}C_i\frac{Q_{k,i}}{Q_{C,i}} - \frac{Q_{k,i}}{Q_{C,i}}\sum_j M_{i,j}
 $$ {#eq-2}
 
 In the above equations, $X_{k,i}$ is the biomass in element $k$. The model contains two ways that organisms mineralize elements that need to be chosen between. They can loose an element at a constant per capita rate $E_{k,i}$ or they can loose an element at a constant proportion of the food assimilated $p_{k,i}$. Both are used in the literature, the former in metabolic scaling models and the latter in existing soil food web models. We include both in our model so that the user can select which method is most appropriate for their application.
@@ -41,9 +41,9 @@ Starting from equation (1), we solve the following matrix problem $Ax=b$, where 
 
 $$
 A = \begin{pmatrix}
-a_{1}p_{1} - \frac{w_{11}X_1}{\sum_{h=1}^N{w_{1h}X_h}} & ... & - \frac{w_{N1}X_1}{\sum_{h=1}^N{w_{Nh}X_h}} \\
+a_{12}p_{1} - \frac{w_{11}X_1}{\sum_{h=1}^N{w_{1h}X_h}} & ... & - \frac{w_{N1}X_1}{\sum_{h=1}^N{w_{Nh}X_h}} \\
 \vdots &  & \vdots \\
-- \frac{w_{1N}X_N}{\sum_{h=1}^N{w_{1h}X_h}} & ... & a_{N}p_{N} - \frac{w_{NN}X_N}{\sum_{h=1}^N{w_{Nh}X_h}} \\
+- \frac{w_{1N}X_N}{\sum_{h=1}^N{w_{1h}X_h}} & ... & a_{NN}p_{N} - \frac{w_{NN}X_N}{\sum_{h=1}^N{w_{Nh}X_h}} \\
 \end{pmatrix}
 $$
 
@@ -68,9 +68,9 @@ $$
 We can calculate mineralization rates using equations 1 to 3.
 
 $$
-\sum_{j} (a_{C,i}p_{C,i}F_{i,j}) -d_iC_i - E_{C,i}C_i -\sum_j M_{i,j} = \\ 
-\hat{Q}_{k,i}(\sum_{j} (\frac{a_{k,i}p_{k,i}F_{i,j}}{\hat{Q}_{k,i}}) - \frac{d_iC_i}{\hat{Q}_{k,i}} - \frac{E_{k,i}C_i}{\hat{Q}_{k,i}} - \frac{1}{\hat{Q}_{k,i}}\sum_j M_{i,j})
-$$ {#eq-4a} 
+\sum_{j} (a_{C,i,j}p_{C,i}F_{i,j}) -d_iC_i - E_{C,i}C_i -\sum_j M_{i,j} = \\ 
+\hat{Q}_{k,i}(\sum_{j} (\frac{a_{k,i,j}p_{k,i}F_{i,j}}{\hat{Q}_{k,i}}) - \frac{d_iC_i}{\hat{Q}_{k,i}} - \frac{E_{k,i}C_i}{\hat{Q}_{k,i}} - \frac{1}{\hat{Q}_{k,i}}\sum_j M_{i,j})
+$$ {#eq-4a}
 
 $$ 
 \sum_{j} (a_{C,i}p_{C,i}F_{i,j}) -d_iC_i - E_{C,i}C_i -\sum_j M_{i,j} = \\ 
@@ -80,7 +80,7 @@ $$ {#eq-4b}
 We can cancel terms for death rate and predation, since these represent losses of all elements at the proportion that they exist in the biomass.
 
 $$
-E_{k,i}C_i = E_{C,i}C_i + \hat{Q}_{k,i}\sum_{j} (\frac{a_{k,i}p_{k,i}F_{i,j}}{\hat{Q}_{k,j}}) - \sum_{j} (a_{C,i}p_{C,i}F_{i,j})
+E_{k,i}C_i = E_{C,i}C_i + \hat{Q}_{k,i}\sum_{j} (\frac{a_{k,i,j}p_{k,i}F_{i,j}}{\hat{Q}_{k,j}}) - \sum_{j} (a_{C,i,j}p_{C,i}F_{i,j})
 $$ {#eq-5}
 
 Then we can combine the terms that sum across all other species $j$ and factor out the feeding rate.
@@ -144,7 +144,7 @@ $$
 \text{subject to} & \quad \sum_{j} f_{i,j} = 1 \\
 & \quad -f_{i,j} \geq -L_{i,j} \forall i \in 1:N \\
 \end{aligned}
-$$ {#eq-11} 
+$$ {#eq-11}
 
 The objective function in the above program sums the mineralization across all elements after calculating the net mineralization of each element in units of carbon. By dealing in carbon, all elements are compared in the same currency and therefore can be summed.
 
@@ -174,11 +174,11 @@ Returning to our matrix problem $Ax=b$, we can add equations to solve for this n
 
 $$
 \hat{A} = \begin{pmatrix}
-a_{1}p_{1} - \frac{w_{11}X_1}{\sum_{h=1}^N{w_{1h}X_h}} & ... & - \frac{w_{N1}X_1}{\sum_{h=1}^N{w_{Nh}X_h}} & ... & 0 \\
+a_{12}p_{1} - \frac{w_{11}X_1}{\sum_{h=1}^N{w_{1h}X_h}} & ... & - \frac{w_{N1}X_1}{\sum_{h=1}^N{w_{Nh}X_h}} & ... & 0 \\
 \vdots &  & \vdots  & - X_m & 0 \\
 \vdots &  & \vdots  & \vdots & \vdots \\
 \vdots &  & \vdots  & 0 & - X_M \\
-- \frac{w_{1N}X_N}{\sum_{h=1}^N{w_{1h}X_h}} & ... & a_{N}p_{N} - \frac{w_{NN}X_N}{\sum_{h=1}^N{w_{Nh}X_h}} & ... & 0 \\
+- \frac{w_{1N}X_N}{\sum_{h=1}^N{w_{1h}X_h}} & ... & a_{NN}p_{N} - \frac{w_{NN}X_N}{\sum_{h=1}^N{w_{Nh}X_h}} & ... & 0 \\
 ... & \sum_j^N\mathfrak{a}_{k,m,j}\frac{w_{mj}X_m}{\sum_{h=1}^N{w_{mh}X_h}} & ... & X_m & 0 \\
 \vdots & \vdots & \vdots  & \vdots & \vdots \\
 ... & \sum_j^N\mathfrak{a}_{k,M,j}\frac{w_{Mj}X_M}{\sum_{h=1}^N{w_{Mh}X_h}} & ...  & 0 & X_M \\
