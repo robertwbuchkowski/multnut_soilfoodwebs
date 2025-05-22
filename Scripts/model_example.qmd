@@ -25,13 +25,13 @@ The model is based on a Lotka-Volterra population model between nodes wherein th
 ## Model equations
 
 $$
-\frac{dX_{C,i}}{dt} = \sum_{j} (a_{C,i,j}p_{C,i}F_{i,j}) -d_iC_i - E_{C,i}C_i -\sum_j M_{i,j}
+\frac{dX_{C,i}}{dt} = \sum_{j} (p_{C,i}a_{C,i,j}F_{i,j}) -d_iX_{C,i} - E_{C,i}X_{C,i} -\sum_j F_{j,i}
 $$ {#eq-1}
 
 $$
 \begin{align}
-\frac{dX_{k,i}}{dt} &= \sum_{j} (a_{k,i,j}p_{k,i}F_{i,j}\frac{Q_{k,j}}{Q_{C,j}}) - d_iC_i\frac{Q_{k,i}}{Q_{C,i}} \\
-  & - E_{k,i}C_i\frac{Q_{k,i}}{Q_{C,i}} - \frac{Q_{k,i}}{Q_{C,i}}\sum_j M_{i,j}
+\frac{dX_{k,i}}{dt} &= \sum_{j} (a_{k,i,j}p_{k,i}F_{i,j}\frac{Q_{k,j}}{Q_{C,j}}) - d_iX_{C,i}\frac{Q_{k,i}}{Q_{C,i}} \\
+  & - E_{k,i}X_{C,i}\frac{Q_{k,i}}{Q_{C,i}} - \frac{Q_{k,i}}{Q_{C,i}}\sum_j F_{j,i}
 \end{align}
 $$ {#eq-2}
 
@@ -227,7 +227,7 @@ comana(foodweb)$fmat$Nitrogen
 Now that we know the consumption of all elements, we can calculate the amount of each element that is available for growth after accounting for assimilation and production efficiencies. This information is used to determine each species mineralization rate $E_{k,i}$ for each element (in units of carbon!).
 
 $$
-E_{k,i}C_i = E_{C,i}C_i + \sum_{j} (\frac{\hat{Q}_{k,i}}{\hat{Q}_{k,j}}a_{k,i,j}p_{k,i}-a_{C,i,j}p_{C,i})F_{i,j}
+E_{k,i}X_{C,i} = E_{C,i}X_{C,i} + \sum_{j} (\frac{\hat{Q}_{k,i}}{\hat{Q}_{k,j}}a_{k,i,j}p_{k,i}-a_{C,i,j}p_{C,i})F_{i,j}
 $$
 
 ## Understanding the nutrients in each food source:
