@@ -7,8 +7,7 @@ editor: visual
 
 ## Model formulation
 
-The model is based on a Lotka-Volterra population model between nodes wherein the amount of each element, *k*, is represented for each node in the food web, *X*. The biomass in each node is indexed in units of carbon, so we can use two equations to represent all of the elements in the food web: one for carbon and another for every other element.
-$$
+The model is based on a Lotka-Volterra population model between nodes wherein the amount of each element, *k*, is represented for each node in the food web, *X*. The biomass in each node is indexed in units of carbon, so we can use two equations to represent all of the elements in the food web: one for carbon and another for every other element. $$
 \frac{dX_{C,i}}{dt} = \sum_{j} (a_{C,i,j}p_{C,i}F_{i,j}) -d_iX_{C,i} - E_{C,i}X_{C,i} -\sum_j M_{i,j}
 $$ {#eq-1}
 
@@ -31,7 +30,7 @@ The consequence of this equality, is that we can calculate one parameter for eac
 We can solve for the consumption rates using only the equations for carbon and then make modifications to this equation to balance demand for multiple elements. We define the consumption rates based on the availability of each food item and any preference weights set in the feeding preference matrix. We call these preferences $w_{ij}$. This leads to the following equation for each consumption rate.
 
 $$
-F_{ij} = \frac{w_{ij}X_i}{\sum_{h=1}^N{w_{ih}X_h}}\sum_j^N{F_{ij}}
+F_{ij} = \frac{w_{ij}X_j}{\sum_{h=1}^N{w_{ih}X_h}}\sum_j^N{F_{ij}}
 $$
 
 To solve the carbon equation, we use the full system of equations and assume that changes over time are zero or $\frac{dX_{C,i}}{dt}=0$. We are solving for total consumption rate of each species, which is $\sum_j^N{F_{ij}}$.
