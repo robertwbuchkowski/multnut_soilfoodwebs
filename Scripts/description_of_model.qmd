@@ -222,7 +222,7 @@ Once we have the amount of excess carbon that needs to be removed, which is just
 
 $$
 \frac{dX_{Ci}}{dt} = p_i\sum_{j} (a_{Cij}F_{Cij}) -d_iX_{Ci} - E_{Ci}X_{Ci} - \hat{E}_{Ci}X_{Ci} -\sum_j F_{Cji}
-$$ These calculations are occurring at equilibrium, so that means we can set this to zero. We know that this is a modification of the assimilation rate $\hat{a}_i$ that will also make this zero. We make this a constant change across all assimilation rates.
+$$These calculations are occurring at equilibrium, so that means we can set this to zero. We know that there is a modification of the assimilation rate $\hat{a}_i$ that will also make this zero. We make this a constant change across all assimilation rates.
 
 $$
 p_i\sum_{j} (\hat{a}_ia_{Cij}F_{Cij}) -d_iX_{Ci} - E_{Ci}X_{Ci} -\sum_j F_{Cji} = 0
