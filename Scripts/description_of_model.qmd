@@ -1,5 +1,5 @@
 ---
-title: "Appendix S1: Multiple Nutrient Soil Food Web Analysis"
+title: "Supporting Material: Correcting for nutrient limitation"
 author: "Robert W Buchkowski"
 format: pdf
 editor: visual
@@ -8,101 +8,101 @@ editor: visual
 ## Model formulation
 
 The model is based on a Lotka-Volterra population model between nodes, wherein the amount of each element, *k*, is represented for each node in the food web, *X*. The biomass in each node is indexed in units of carbon, so we can use two equations to represent all of the elements in the food web: one for carbon and another for every other element. $$
-\frac{dX_{iC}}{dt} = \sum_{j} (a_{ijC}p_{iC}F_{ijC}) -d_iX_{iC} - E_{iC}X_{iC} -\sum_j F_{jiC}
+\frac{dX_{Ci}}{dt} = J_{Ci} + p_i\sum_{j} (a_{Cij}F_{Cij}) -d_iX_{Ci} - E_{Ci}X_{Ci} -\sum_j F_{Cji}
 $$ {#eq-1}
 
 $$
-\frac{dX_{ik}}{dt} = \sum_{j} (a_{ijk}p_{ik}F_{ijC}\frac{Q_{jk}}{Q_{jC}}) - d_iX_{iC}\frac{Q_{ik}}{Q_{iC}} - E_{ik}X_{iC}\frac{Q_{ik}}{Q_{iC}} - \frac{Q_{ik}}{Q_{iC}}\sum_j F_{jiC}
+\frac{dX_{ki}}{dt} = J_{ki} + \sum_{j} (a_{kij}F_{Cij}\frac{Q_{kj}}{Q_{Cj}}) - d_iX_{Ci}\frac{Q_{ki}}{Q_{Ci}} - E_{ki}X_{Ci}\frac{Q_{ki}}{Q_{Ci}} - \frac{Q_{ki}}{Q_{Ci}}\sum_j F_{Cji}
 $$ {#eq-2}
 
-In the above equations, $X_{ik}$ is the biomass in element $k$. The model contains two ways that organisms mineralize elements that need to be chosen between. They can loose an element at a constant per capita rate $E_{ik}$ or they can loose an element at a constant proportion of the food assimilated $p_{ik}$. Both are used in the literature, the former in metabolic scaling models and the latter in existing soil food web models. We include both in our model so that the user can select which method is most appropriate for their application.
-
-We assume fixed stoichiometry for each element, which means that the rate of change in carbon content to that of all the other elements remain the same over time. The model takes the percentage of each element present in the biomass of the animal $Q_{ik}$. To simplify our notation, we will call the ratio of carbon to each element $\frac{Q_{iC}}{Q_{ik}} = \hat{Q}_{ik}$. Because we typically take larger time steps, this means that we can assume the following equality:
-
-$$
-\frac{X_{iC}}{dt} = \hat{Q}_{ik}\frac{X_{ik}}{dt}
-$$ {#eq-3}
-
-We can calculate one parameter for each chemical element other than carbon by using the above equation. In soil food web models, this is usually used to calculate the mineralization parameters $E_{ik}$, which are usually reported as total mineralization or $E_{ik}X_{iC}$ in units of carbon or $\frac{E_{ik}X_{iC}}{\hat{Q}_{ik}}$ in the units of element $k$.
+In the above equations, $X_{ki}$ is the biomass in element $k$. The model contains two ways that organisms respire carbon. They can respire at a constant per capita rate $E_{Ci}$ (biomass-based) or they can respire at a constant proportion of the food assimilated $p_{i}$ (consumption-based).
 
 ## Solving consumption rates
 
-We can solve for the consumption rates using only the equations for carbon and then make modifications to this equation to balance demand for multiple elements. We define the consumption rates based on the feeding matrix. Often this matrix includes preferences that consider the relative availability of each food item and any preferences based on prey defense, predator-prey body size, haitat domains, etc. We call the elements of the feeding matrix $W_{ij}$. It is necessary that these feeding preferences sum to 1 for each predator: $$\sum_i W_{ij} = 1$$.
+We can solve for the consumption rates using only the equations for carbon and then make modifications to this equation to balance demand for multiple elements. We define the consumption rates based on the feeding matrix. Often this matrix includes preferences that consider the relative availability of each food item and any preferences based on prey defense, predator-prey body size, habitat domains, etc. We call the elements of the feeding matrix $W_{ij}$. It is necessary that these feeding preferences sum to 1 for each predator: $$\sum_i W_{ij} = 1$$
 
-To solve the carbon equation, we use the full system of equations and assume that changes over time are zero or $\frac{dX_{iC}}{dt}=0$. We are solving for total consumption rate of each species, which is $\sum_j^N{F_{ij}}$.
+To solve the carbon equation, we use the full system of equations and assume that changes over time are zero or $\frac{dX_{Ci}}{dt}=0$. We are solving for total consumption rate of each species, which is $\sum_j^M{F_{ij}}$.
 
-Starting from equation (1), we solve the following matrix problem $Ax=b$, where $x$ is a vector of total consumption rates for each species, $A$ is a matrix of predation rates, and $b$ is a vector of death rates and respiration rates.
+Starting from equation (1), we solve the following matrix problem $Ax=b$, where $x$ is a vector of total consumption rates for each species, $A$ is a matrix of predation rates, and $b$ is a vector of death rates and biomass-based respiration rates.
 
 $$
 A = \begin{pmatrix}
-p_{1}(\sum_{j=1}^Na_{1j}W_{1j}) - W_{11} & ... & - W_{N1} \\
+p_{1}(\sum_{j=1}^Ma_{C1j}W_{1j}) - W_{11} & ... & - W_{M1} \\
 \vdots &  & \vdots \\
-- W_{1N} & ... & p_{N}(\sum_{j=1}^N a_{Nj}W_{Nj}) - W_{NN} \\
+- W_{1M} & ... & p_{M}(\sum_{j=1}^M a_{CMj}W_{Mj}) - W_{MM} \\
 \end{pmatrix}
 $$
 
 $$
 b = \begin{pmatrix}
-d_1X_1 + E_{1C}X_1 \\
+d_1X_C1 + E_{C1}X_C1 \\
 \vdots \\
-d_NX_N + E_{NC}X_N \\
+d_MX_CM + E_{CM}X_CM \\
 \end{pmatrix}
 $$
 
 $$
 x = \begin{pmatrix}
-\sum_j^N{F_{1j}} \\
+\sum_j^M{F_{C1j}} \\
 \vdots \\
-\sum_j^N{F_{Nj}} \\
+\sum_j^M{F_{CMj}} \\
 \end{pmatrix}
 $$
 
 ## Calculating mineralization rates
 
+We assume fixed stoichiometry for each element, which means that the rate of change in carbon content for each animal must be an exact multiple of the rate of change for all the other elements at each time step. The model parameters include the proportion of the total biomass that is made of each element $Q_{ki}$. To simplify our notation going forward, we will call the ratio of carbon to each element $\hat{Q}_{ki}=\frac{Q_{Ci}}{Q_{ki}}$. This means that we can assume the following equality for every element in the model:
+
+$$
+\frac{X_{Ci}}{dt} = \hat{Q}_{ki}\frac{X_{ki}}{dt}
+$$ {#eq-3}
+
+We can calculate one parameter for each chemical element other than carbon by using the above equation. In soil food web models, this is usually used to calculate the mineralization parameters $E_{ki}$, which can be reported as total mineralization: $E_{ki}X_{Ci}$ in units of carbon or $\frac{E_{ki}X_{Ci}}{\hat{Q}_{ki}}$ in the units of element $k$.
+
 We can calculate mineralization rates using equations 1 to 3.
 
 $$
-\sum_{j} (a_{ijC}p_{iC}F_{ijC}) -d_iX_{iC} - E_{iC}X_{iC} -\sum_j F_{jiC} = \\ 
-\hat{Q}_{ik}(\sum_{j} (\frac{a_{ijk}p_{ik}F_{ijC}}{\hat{Q}_{jk}}) - \frac{d_iX_{iC}}{\hat{Q}_{ik}} - \frac{E_{ik}X_{iC}}{\hat{Q}_{ik}} - \frac{1}{\hat{Q}_{ik}}\sum_j F_{jiC})
+p_i\sum_{j} (a_{Cij}F_{Cij}) -d_iX_{Ci} - E_{Ci}X_{Ci} -\sum_j F_{Cji} = \\ 
+\hat{Q}_{ki}(\sum_{j} (\frac{a_{kij}F_{Cij}}{\hat{Q}_{kj}}) - \frac{d_iX_{Ci}}{\hat{Q}_{ki}} - \frac{E_{ki}X_{Ci}}{\hat{Q}_{ki}} - \frac{1}{\hat{Q}_{ki}}\sum_j F_{Cji})
 $$ {#eq-4a}
 
 $$
-\sum_{j} (a_{ijC}p_{iC}F_{ijC}) -d_iX_{iC} - E_{iC}X_{iC} -\sum_j F_{jiC} = \\ 
-\hat{Q}_{ik}\sum_{j} (\frac{a_{ijk}p_{ik}F_{ijC}}{\hat{Q}_{jk}}) - d_iX_{iC} - E_{ik}X_{iC} - \sum_j F_{jiC}
+\sum_{j} (a_{Cij}p_{Ci}F_{Cij}) -d_iX_{Ci} - E_{Ci}X_{Ci} -\sum_j F_{Cji} = \\ 
+\hat{Q}_{ki}\sum_{j} (\frac{a_{kij}p_{ki}F_{Cij}}{\hat{Q}_{kj}}) - d_iX_{Ci} - E_{ki}X_{Ci} - \sum_j F_{Cji}
 $$ {#eq-4b}
 
-We can cancel terms for death rate and predation, since these represent losses of all elements at the proportion that they exist in the biomass.
+We can cancel terms for death rate and predation, since these represent losses of all elements at the proportion that they exist in the biomass of each node. This leaves us with the following equation.
 
 $$
-E_{ik}X_{iC} = E_{iC}X_{iC} + \hat{Q}_{ik}\sum_{j} (\frac{a_{ijk}p_{ik}F_{ijC}}{\hat{Q}_{jk}}) - \sum_{j} (a_{ijC}p_{iC}F_{ijC})
+E_{ki}X_{Ci} = E_{Ci}X_{Ci} + \hat{Q}_{ki}\sum_{j} (\frac{a_{kij}F_{Cij}}{\hat{Q}_{kj}}) - p_i\sum_{j} (a_{Cij}F_{Cij})
 $$ {#eq-5}
 
 Then we can combine the terms that sum across all other species $j$ and factor out the feeding rate.
 
 $$
-E_{ik}X_{iC} = E_{iC}X_{iC} + \sum_{j} (\frac{\hat{Q}_{ik}}{\hat{Q}_{jk}}a_{ijk}p_{ik}-a_{ijC}p_{iC})F_{ijC}
+E_{ki}X_{Ci} = E_{Ci}X_{Ci} + \sum_{j} (\frac{\hat{Q}_{ki}}{\hat{Q}_{kj}}a_{kij}-a_{Cij}p_{Ci})F_{Cij}
 $$ {#eq-6}
 
-This equation provides an easy interpretation of how mineralization is determined. The amount of element $k$ mineralized is $\frac{E_{ik}X_{iC}}{\hat{Q}_{ik}}$ in its own units, but because the nutrient stoichiometry is fixed, we can express it in units of carbon to make it easier to compare across multiple chemical elements. This value $E_{ik}X_{iC}$ is equal to the amount of carbon mineralized $E_{iC}X_{iC}$ plus the additional gain or loss of the element $k$ from the food, considering assimilation and production efficiency. So, when the second term is positive, there is relatively more of element $k$ mineralized than carbon. When it is negative, there is relatively less.
+This equation provides an interpretation of how mineralization is calculated. The amount of element $k$ mineralized is $\frac{E_{ki}X_{Ci}}{\hat{Q}_{ki}}$ in its own units, but because the nutrient stoichiometry is fixed, we can express it in units of carbon to make it easier to compare across multiple chemical elements. This value, $E_{ki}X_{Ci}$, is equal to the amount of carbon mineralized $E_{Ci}X_{Ci}$ plus the additional gain or loss of the element $k$ from the food, considering assimilation efficiency. So, when the second term is positive, there is relatively more of element $k$ mineralized than carbon. When it is negative, there is relatively less.
 
-The term in the parenthetical has an important interpretation. When it is negative for food source $j$, then eating that food leads to a nutrient deficiency. When it is positive, eating that food leads to a nutrient surplus. For the purposes of further modelling, we define this term using calographic letter $\mathfrak{a}$.
+The term in the parenthetical has an important interpretation. When it is negative for food source $j$, then eating that food leads to a nutrient deficiency. When it is positive, eating that food leads to a nutrient surplus. For the purposes of further simplication, we define this term using calligraphic letter $\mathfrak{a}$.
 
 Overall, we can solve for mineralization rates using the following, simplified equation:
 
 $$
-E_{ik}X_{iC} = E_{iC}X_{iC} + \sum_{j} \mathfrak{a}_{ijk}F_{ijC}
+E_{ki}X_{Ci} = E_{Ci}X_{Ci} + \sum_{j} \mathfrak{a}_{kij}F_{Cij}
 $$ {#eq-7}
 
-## Using dietary changes to meet nutrient demands
+## Diet-adjusted response to nutrient limitation
 
 For many species included in food web models, we need to adhere to the constraint that mineralizaiton is greater than zero or some minimum value. Mathematically, this means the following:
 
 $$
-E_{ik}X_{iC} \geq 0
+E_{ki}X_{Ci} \geq 0
 $$ {#eq-8a}
 
 $$ 
-E_{iC}X_{iC} \geq -\sum_{j} \mathfrak{a}_{ijk}F_{ijC}
+E_{Ci}X_{Ci} \geq -\sum_{j} \mathfrak{a}_{kij}F_{Cij}
 $$ {#eq-8b}
 
 To ensure that this constraint is met, we can modify the feeding rates on each food source until the RHS of the equation is less than the amount of carbon mineralized.
@@ -110,7 +110,7 @@ To ensure that this constraint is met, we can modify the feeding rates on each f
 We want to modify the feeding rates so that they are as close as possible to the actual food availability. Food availability should include abundance and preferences, which is already captured in the feeding matrix terms $W_ij$. To solve this problem, we define $f_{ij}$ as the proportion of the overall diet $F_{iT}$ that is composed of food $j$. This allows us to modify the above equation to be:
 
 $$
-E_{iC}X_{iC} \geq -\sum_{j} \mathfrak{a}_{ijk}f_{ij}F_{iT}
+E_{Ci}X_{Ci} \geq -\sum_{j} \mathfrak{a}_{kij}f_{ij}F_{iT}
 $$ {#eq-9}
 
 With this notation, we can define the following quadratic program:
@@ -120,7 +120,7 @@ $$
 \min_{f_{ij}} & \quad \sum_{j}^{N} {(W_{ij} - f_{ij})^2} \\
 \text{subject to} & \quad \sum_{j} f_{i,j} = 1 \\
 & \quad -f_{ij} \geq -L_{ij} \forall i \in 1:N \\
-& \quad \sum_{j} \mathfrak{a}_{ijk}f_{ij}F_{iT} \geq -E_{iC}X_{iC}
+& \quad \sum_{j} \mathfrak{a}_{kij}f_{ij}F_{iT} \geq -E_{Ci}X_{Ci}
 \end{aligned}
 $$ {#eq-10}
 
@@ -128,13 +128,13 @@ In the above program, we minimize the differences between the abundance of the f
 
 The quadratic program does not always have a solution because it is possible that shifting diets can improve nutrient intake, but not enough to meet demand. In these cases, the program will fail but the organism should shift it's diet somewhat to minimize nutrient deficiency.
 
-Here, we benefit from representing all nutrient deficiencies in units of carbon. This allows us to maximize the nutrient content of the diet across all nutrients. We justify this, because the organism response to any dietary limitation not addressed by diet will be to increase their metabolic losses. This means that the best strategy is to get all elements as close to matching as possible rather than get lots of one element at the expense of another. **A core assumption here is that all elements included in this model are essential.**
+Here, we benefit from representing all nutrient deficiencies in units of carbon. This allows us to maximize the nutrient content of the diet across all nutrients. We justify this, because the organism response to any dietary limitation not addressed by diet will be to increase their metabolic losses. This means that the best strategy is to get all elements as close to matching as possible rather than get lots of one element at the expense of another.
 
 Given this assumption, we can write the following linear program:
 
 $$
 \begin{aligned}
-\max_{f_{ij}} & \quad \sum_{k} \sum_{j}^{N} \mathfrak{a}_{ijk}f_{ij}F_{iT} \\
+\max_{f_{ij}} & \quad \sum_{k} \sum_{j}^{N} \mathfrak{a}_{kij}f_{ij}F_{iT} \\
 \text{subject to} & \quad \sum_{j} f_{ij} = 1 \\
 & \quad -f_{ij} \geq -L_{ij} \forall i \in 1:N \\
 \end{aligned}
@@ -144,74 +144,92 @@ The objective function in the above program sums the mineralization across all e
 
 ### The importance of cannibalism
 
-The diet adjustments can run into issues whenever the target species can cannibalize, because con-specifics are high quality food items, but eating too many of them will lead to negative growth and death of the population. To avoid this issue, we can set the diet limits accordingly. To do this, we can calculate the maximum proportion of the diet from cannibalism by recognizing that the total consumption must be positive.
+The diet adjustments can run into issues whenever the target species can cannibalize, because conspecifics are high quality food items, but eating too many of them will lead to negative growth and death of the population. To avoid this issue, we can set the diet limits accordingly. To do this, we can calculate the maximum proportion of the diet from cannibalism by recognizing that the total consumption must be positive.
 
 $$
 \begin{aligned}
-p_{iC}(\sum_{j \neq 1} (a_{ijC}f_{ij}F_{iT}) + a_{iiC}f_{ii}F_{iT}) -d_iX_{iC} - E_{iC}X_{iC} -\sum_{j \neq 1} F_{jiC} - f_{ii}F_{iT} = 0 \\ 
-F_{iT} = \frac{d_iX_{iC} + E_{iC}X_{iC} + \sum_{j \neq 1} F_{jiC}}{p_{iC}(\sum_{j \neq 1} (a_{ijC}f_{ij}) + a_{iiC}f_{ii})- f_{ii}}\\
+p_{Ci}(\sum_{j \neq 1} (a_{Cij}f_{ij}F_{iT}) + a_{iCi}f_{ii}F_{iT}) -d_iX_{Ci} - E_{Ci}X_{Ci} -\sum_{j \neq 1} F_{Cji} - f_{ii}F_{iT} = 0 \\ 
+F_{iT} = \frac{d_iX_{Ci} + E_{Ci}X_{Ci} + \sum_{j \neq 1} F_{Cji}}{p_{Ci}(\sum_{j \neq 1} (a_{Cij}f_{ij}) + a_{iCi}f_{ii})- f_{ii}}\\
 F_{iT} \geq 0 ~~~~iff \\
-p_{iC}(\sum_{j \neq 1} (a_{ijC}f_{ij}) + a_{iiC}f_{ii})- f_{ii} \geq 0 \\
-p_{iC}\sum_{j \neq 1} (a_{ijC}f_{ij}) \geq f_{ii} - p_{iC}a_{iiC}f_{ii} \\
-f_{ii} \leq \frac{p_{iC}\sum_{j \neq 1} (a_{ijC}f_{ij})}{1 - p_{iC}a_{iiC}}\\
+p_{Ci}(\sum_{j \neq 1} (a_{Cij}f_{ij}) + a_{iCi}f_{ii})- f_{ii} \geq 0 \\
+p_{Ci}\sum_{j \neq 1} (a_{Cij}f_{ij}) \geq f_{ii} - p_{Ci}a_{iCi}f_{ii} \\
+f_{ii} \leq \frac{p_{Ci}\sum_{j \neq 1} (a_{Cij}f_{ij})}{1 - p_{Ci}a_{iCi}}\\
 \end{aligned}
 $$
 
-## Deficiencies unaddressed by diet
+## Respiration-adjusted response to nutrient limitiation
 
-In many cases, nutrient deficiency may not be addressed by diet alone because there is only 1 dietary option or all options have insufficient nutrient content. In these cases, the organism is limited by the nutrient in shortest supply by Liebig's Law of the Minimum and must reduce their growth to match this supply rate.
+In many cases, nutrient deficiency may not be addressed by diet alone because there is only 1 dietary option, all options have insufficient nutrient content, or there are other constraints not considered in the model. In these cases, the organism is limited by the nutrient in shortest supply by Liebig's Law of the Minimum and must reduce their growth to match this supply rate.
 
-We can calculate this reduction in growth by calculating the amount of extra carbon that needs to be mineralized. We can decide to either (1) increase per capita respiration or (2) decrease production efficiency. **So far we will only use the former, but we can add functionality for the latter later. At equilibrium, the difference is trivial because neither biomass nor consumption rate change.**
+We can calculate this reduction in growth by calculating the amount of extra carbon that needs to be mineralized. We can decide to either (1) increase respiration (respiration-adjusted) or (2) decrease assimilation efficiency (assimilation-adjusted).
 
-Using the equation for the element in shortest supply, which is identified as the one where $E_{k,i}$ is smallest, we can calculate a new $E_{C,i}$ using equation (8):
+Both methods start with the same step, which is to calculate the amount of extra carbon that needs to be mineralized. Using the equation for the element in shortest supply, which is identified as the one where $E_{ki}$ is smallest, we can calculate a new $E_{Ci}$.
 
 $$
 \begin{aligned}
-E_{k,i}X_{C,i} \geq 0 & \quad \forall k
+E_{ki}X_{Ci} \geq 0 & \quad \forall k
 \end{aligned}
 $$ {#eq-13a}
 
 If we already know that the mineralization rate is less than zero, we can calculate the case where mineralization rate is zero for the element in shortest supply.
 
 $$
-E_{C,i}X_{C,i} + \sum_{j} \mathfrak{a}_{k,i,j}F_{i,j} = 0
+E_{Ci}X_{Ci} + \sum_{j} \mathfrak{a}_{kij}F_{ij} = 0
 $$ {#eq-13b}
 
-However, the consumption rate $F_{i,j}$ will change as a function of $E_{C,i}$ because higher respiration requires more consumption to hold the biomass at equilibrium. Therefore to isolate the term $E_{C,i}$, we need to solve $F_{i,j}$ simultaneously. To do this, we return to our matrix problem above and add one version of equation (15) for every species that needs to increase its respiration rate. To make the changes more transparent, we introduce a new term into the equation $\hat{E}_{C,i}$, which is the rate of overflow respiration caused by nutrient limitation. Treating this term separately makes the solution easier and makes the result easier to interpret and use.
+However, the consumption rate $F_{Cij}$ will change as a function of $E_{Ci}$ because higher loss requires more consumption to hold the biomass at equilibrium. Therefore to isolate the term $E_{Ci}$, we need to solve $F_{Cij}$ simultaneously. To do this, we return to our matrix problem above and add one version of the mineralization equation for every species that needs to increase its respiration rate. To make the changes more transparent, we introduce a new term into the equation $\hat{E}_{Ci}$, which is the rate of overflow respiration caused by nutrient limitation. Treating this term separately makes the solution easier and makes the result easier to interpret and use.
 
-Returning to our matrix problem $Ax=b$, we can add equations to solve for this new value of $\hat{E}_{C,i}$. Assume that there are $M$ species indexed by $m$ that require an increased respiration rate. We can write a new version of this problem $\hat{A}\hat{x} = \hat{b}$ with $M$ new equations. The example matricies below place the terms for these new equations in the middle of the matrix, but note that they always sit in the column or row corresponding to the species requiring respiration correction. This could be species 1 or N.
+Returning to our matrix problem $Ax=b$, we can add equations to solve for this new value of $\hat{E}_{Ci}$. Assume that there are $S$ species indexed by $s$ that require an increased respiration rate. We can write a new version of this problem $\hat{A}\hat{x} = \hat{b}$ with $S$ new equations. The example matrices below place the terms for these new equations in the middle of the matrix, but note that they always sit in the column or row corresponding to the species requiring respiration correction. This could be species 1 or M.
 
 $$
 \hat{A} = \begin{pmatrix}
-a_{12}p_{1} - \frac{w_{11}X_1}{\sum_{h=1}^N{w_{1h}X_h}} & ... & - \frac{w_{N1}X_1}{\sum_{h=1}^N{w_{Nh}X_h}} & ... & 0 \\
-\vdots &  & \vdots  & - X_m & 0 \\
-\vdots &  & \vdots  & \vdots & \vdots \\
-\vdots &  & \vdots  & 0 & - X_M \\
-- \frac{w_{1N}X_N}{\sum_{h=1}^N{w_{1h}X_h}} & ... & a_{NN}p_{N} - \frac{w_{NN}X_N}{\sum_{h=1}^N{w_{Nh}X_h}} & ... & 0 \\
-... & \sum_j^N\mathfrak{a}_{k,m,j}\frac{w_{mj}X_m}{\sum_{h=1}^N{w_{mh}X_h}} & ... & X_m & 0 \\
-\vdots & \vdots & \vdots  & \vdots & \vdots \\
-... & \sum_j^N\mathfrak{a}_{k,M,j}\frac{w_{Mj}X_M}{\sum_{h=1}^N{w_{Mh}X_h}} & ...  & 0 & X_M \\
+a_{12}p_{1} - W_{11} & ... & - W_{M1} & ... & ... & 0 \\
+\vdots &  & \vdots  & - X_{Cs} & ... & 0 \\
+\vdots &  & \vdots  & \vdots & ... & \vdots \\
+\vdots &  & \vdots  & 0 & ... & - X_{CS} \\
+- W_{1M} & ... & a_{MM}p_{M} - W_{MM} & ... & ... & 0 \\
+... & \sum_j^M\mathfrak{a}_{kmj}W_{sj} & ... & X_{Cs} & ... & 0 \\
+\vdots & \vdots & \vdots  & \vdots & ... & \vdots \\
+... & \sum_j^M\mathfrak{a}_{kSj}W_{Sj} & ...  & 0 & ... & X_{CS} \\
 \end{pmatrix}
 $$
 
 $$
 \hat{b} = \begin{pmatrix}
-d_1X_1 + E_{C,1}X_1 \\
+d_1X_1 + E_{C1}X_{C1} \\
 \vdots \\
-d_NX_N + E_{C,N}X_N \\
-- E_{C,m}X_m\\
+d_NX_N + E_{CN}X_{CN} \\
+- E_{Cm}X_{Cm}\\
 \vdots \\
-- E_{C,M}X_M\\
+- E_{CM}X_{CM}\\
 \end{pmatrix}
 $$
 
 $$
 \hat{x} = \begin{pmatrix}
-\sum_j^N{F_{1j}} \\
+\sum_j^M{F_{C1j}} \\
 \vdots \\
-\sum_j^N{F_{Nj}} \\
-\hat{E}_{C,m} \\
+\sum_j^M{F_{CMj}} \\
+\hat{E}_{Cs} \\
 \vdots \\
-\hat{E}_{C,M} \\
+\hat{E}_{CS} \\
 \end{pmatrix}
 $$
+
+## Assimilation-adjusted response to nutrient limitation
+
+Once we have the amount of excess carbon that needs to be removed, which is just $\hat{E}_{Ci}X_{Ci}$, we can also calculate the reduction in assimilation efficiency necessary to achieve this same reduction in carbon gains. We starting from the ordinary differential equation for carbon flux in each node with the respiration correction.
+
+$$
+\frac{dX_{Ci}}{dt} = p_i\sum_{j} (a_{Cij}F_{Cij}) -d_iX_{Ci} - E_{Ci}X_{Ci} - \hat{E}_{Ci}X_{Ci} -\sum_j F_{Cji}
+$$ These calculations are occurring at equilibrium, so that means we can set this to zero. We know that this is a modification of the assimilation rate $\hat{a}_i$ that will also make this zero. We make this a constant change across all assimilation rates.
+
+$$
+p_i\sum_{j} (\hat{a}_ia_{Cij}F_{Cij}) -d_iX_{Ci} - E_{Ci}X_{Ci} -\sum_j F_{Cji} = 0
+$$ We then solve for $\hat{a}_i$.
+
+$$
+\hat{a}_i = \frac{d_iX_{Ci} + E_{Ci}X_{Ci} +\sum_j F_{Cji}}{p_i\sum_{j} (a_{Cij}F_{Cij})}
+$$
+
+To update the model, we simply replace $a_{Cij}$ with $\hat{a}_ia_{Cij}$.
