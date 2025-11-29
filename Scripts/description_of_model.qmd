@@ -1,6 +1,5 @@
 ---
-title: "Supporting Material: Correcting for nutrient limitation"
-author: "Robert W Buchkowski"
+title: "Supporting Information: Model detials"
 format: pdf
 editor: visual
 ---
@@ -233,3 +232,32 @@ $$
 $$
 
 To update the model, we simply replace $a_{Cij}$ with $\hat{a}_ia_{Cij}$.
+
+## Demonstrating the efficacy of the tracer experiment
+
+The proposed tracer experiment predicts that the ^13^C content of animal respiration will be different between the comsumption-based and biomass-based respiration models for animals feeding on litter enriched in ^13^C. This result can be demonstrated mathematically.
+
+Assume that $t_i$ is the proportion of carbon in node $i$ that is ^13^C. This means that the flux of the tracer $T_i$ through each node in the food web is given by:
+
+$$
+\frac{dT_{Ci}}{dt} = J_{Ti} + p_i\sum_{j} (a_{Cij}F_{Cij}t_j) -d_iX_{Ci}t_i - E_{Ci}X_{Ci}t_i -\sum_j F_{Cji}t_i
+$$
+
+We can use this equation to calculate the respiration ^13^C signature for the two models. For the biomass-based respiration model, the respired tracer proportion matches that of the organism respiring.
+
+$$
+f_{i}^{13C} = \frac{E_{Ci}X_{Ci}t_i}{E_{Ci}X_{Ci}}
+$$
+$$
+f_{i}^{13C} = t_i
+$$
+
+For the consumption-based respiration model, the respired tracer proportion matches the average of the tracer proportion in the diet, weighted by consumption and assimilation efficiencies.
+
+$$
+f_{i}^{13C} = \frac{(1-p_i)\sum_{j} (a_{Cij}F_{Cij}t_j)}{(1-p_i)\sum_{j} (a_{Cij}F_{Cij})}
+$$
+$$
+f_{i}^{13C} = \frac{\sum_{j} (a_{Cij}F_{Cij}t_j)}{\sum_{j} (a_{Cij}F_{Cij})}
+$$
+So, when the weighted average of the tracer in the diet is different enough from that of the consumer biomass, we can distinguish between the models using the tracer experiment. This explains why the experiment only works for highly distinct labels directly in the animal diet (e.g., millipedes and woodlice in Figure 7), because when partial mixing occurs over time, there is not necessarily enough difference between the animal body tracer content and that of its prey at once to see a clear distinction (e.g., earthworms and spiders).
