@@ -1,6 +1,6 @@
 ---
 title: "Supporting Information: Model detials"
-format: pdf
+format: docx
 editor: visual
 ---
 
@@ -61,12 +61,12 @@ We can calculate one parameter for each chemical element other than carbon by us
 We can calculate mineralization rates using equations 1 to 3.
 
 $$
-p_i\sum_{j} (a_{Cij}F_{Cij}) -d_iX_{Ci} - E_{Ci}X_{Ci} -\sum_j F_{Cji} = \\ 
+p_i\sum_{j} (a_{Cij}F_{Cij}) -d_iX_{Ci} - E_{Ci}X_{Ci} -\sum_j F_{Cji} = 
 \hat{Q}_{ki}(\sum_{j} (\frac{a_{kij}F_{Cij}}{\hat{Q}_{kj}}) - \frac{d_iX_{Ci}}{\hat{Q}_{ki}} - \frac{E_{ki}X_{Ci}}{\hat{Q}_{ki}} - \frac{1}{\hat{Q}_{ki}}\sum_j F_{Cji})
 $$ {#eq-4a}
 
 $$
-\sum_{j} (a_{Cij}p_{Ci}F_{Cij}) -d_iX_{Ci} - E_{Ci}X_{Ci} -\sum_j F_{Cji} = \\ 
+\sum_{j} (a_{Cij}p_{Ci}F_{Cij}) -d_iX_{Ci} - E_{Ci}X_{Ci} -\sum_j F_{Cji} = 
 \hat{Q}_{ki}\sum_{j} (\frac{a_{kij}p_{ki}F_{Cij}}{\hat{Q}_{kj}}) - d_iX_{Ci} - E_{ki}X_{Ci} - \sum_j F_{Cji}
 $$ {#eq-4b}
 
